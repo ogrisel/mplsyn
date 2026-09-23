@@ -1251,11 +1251,15 @@ def coastal_scene(size: int = 600, seed: int | None = None) -> Scene:
 
     def drawer(ax, rng, budget, materials):
         objects = []
-        xs = np.linspace(-0.1, 1.1, 16)
+        xs = np.linspace(-0.1, 1.1, 24)
         base_y = rng.uniform(0.42, 0.58)
         phase = rng.uniform(0.0, 2 * np.pi)
+        phase2 = rng.uniform(0.0, 2 * np.pi)
         shore = (
-            base_y + 0.035 * np.sin(2 * np.pi * xs + phase) + 0.02 * np.sin(5 * np.pi * xs + phase)
+            base_y
+            + 0.05 * np.sin(2 * np.pi * xs + phase)
+            + 0.03 * np.sin(5 * np.pi * xs + phase)
+            + 0.012 * np.sin(9 * np.pi * xs + phase2)
         )
         sea = np.vstack([np.column_stack([xs, shore]), [[1.1, -0.1], [-0.1, -0.1]]])
         fill_patch(
@@ -1265,30 +1269,42 @@ def coastal_scene(size: int = 600, seed: int | None = None) -> Scene:
             budget=budget,
             zorder=2,
         )
-        wet = np.vstack(
-            [
-                np.column_stack([xs, shore]),
-                np.column_stack([xs[::-1], shore[::-1] + 0.03]),
-            ]
-        )
-        budget.add_patch(
-            ax,
-            patches.Polygon(
-                wet,
-                closed=True,
-                facecolor=_jitter(rng, "#b79a63", 0.05),
-                edgecolor="none",
-                zorder=3,
-            ),
-        )
+        # A wet-sand gradient just above the waterline (two soft bands).
+        for k, (band, tone) in enumerate([(0.03, "#a88d59"), (0.06, "#c0a569")]):
+            wet = np.vstack(
+                [
+                    np.column_stack([xs, shore]),
+                    np.column_stack([xs[::-1], shore[::-1] + band]),
+                ]
+            )
+            budget.add_patch(
+                ax,
+                patches.Polygon(
+                    wet,
+                    closed=True,
+                    facecolor=_jitter(rng, tone, 0.04),
+                    edgecolor="none",
+                    alpha=0.55 - 0.2 * k,
+                    zorder=3,
+                ),
+            )
+        # Foam broken into short segments so it is not a hard full-width line.
         for k in range(int(rng.integers(2, 4))):
             offset = 0.01 + k * 0.028
-            budget.add_line(
+            yline = shore + offset + 0.006 * np.sin(7 * np.pi * xs + phase)
+            segments = []
+            j = 0
+            while j + 1 < len(xs):
+                span = j + int(rng.integers(2, 4))
+                span = min(span, len(xs) - 1)
+                segments.append([(xs[j], yline[j]), (xs[span], yline[span])])
+                j = span + int(rng.integers(1, 3))
+            budget.add_line_collection(
                 ax,
-                xs,
-                shore + offset + 0.006 * np.sin(7 * np.pi * xs + phase),
-                color=(1.0, 1.0, 1.0, 0.5),
+                segments,
+                color=(1.0, 1.0, 1.0),
                 linewidth=0.9,
+                alpha=float(rng.uniform(0.35, 0.6)),
                 zorder=4,
             )
         for _ in range(int(rng.integers(1, 4))):

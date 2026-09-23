@@ -1206,13 +1206,13 @@ def draw_river(
     )
     water_patch = patches.Polygon(_ribbon(center, width), closed=True, edgecolor="none")
     _fill(ax, water_patch, materials, "water", _jitter(rng, color, 0.05), budget, zorder=3)
-    budget.add_line(
-        ax,
-        center[:, 0].tolist(),
-        center[:, 1].tolist(),
-        color="#8fb8d8",
-        linewidth=1.0,
-        zorder=4,
+    # Broken, faint highlight streaks (not one hard centre line).
+    segments = [
+        [tuple(center[i - 1]), tuple(center[i])]
+        for i in range(1, len(center), 2)
+    ]
+    budget.add_line_collection(
+        ax, segments, color="#9dc0dc", linewidth=1.0, alpha=0.35, zorder=4,
     )
     return _polyline_bbox(center, width * 1.45)
 
