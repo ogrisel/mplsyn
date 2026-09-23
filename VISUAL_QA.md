@@ -1125,5 +1125,37 @@ losses, test split, failure galleries).
 5. **Detection anchors** — add an explicit small anchor (or more anchors) so rock
    and car recover; document the resolution ceiling.
 
+### Round 31 — results (all 5 items done)
+
+| ID | Item | Status |
+|---|---|---|
+| A1 | Conifer crown: soft radial fir crown (concentric blobs + batched needle streaks + small top) | **Fixed** |
+| A2 | Flat grounds: soil gains clods/cracks, grass gains blade ticks + 2nd mottle, crop gains finer bands + grain, sand gets cross-ripples + grain | **Fixed** |
+| A3 | Rock material: smaller/denser slabs, lighter facets, gravel grain; mountain relief alpha 0.7 -> 0.45 with more grass/soil patches | **Fixed** |
+| A4 | Coastline: 3 shoreline harmonics, 2-band wet-sand gradient, segmented foam; rivers lose the hard centre line for faint dashed highlights | **Fixed** |
+| A5 | Detection anchors: **log-space** k-means (raw for the uniform forest crowns) | **Fixed** |
+
+**Metric read-out after the round (all notebooks re-run):**
+
+| notebook | metric | validation | test |
+|---|---|---|---|
+| 05 classification | accuracy | 0.97 | 1.00 |
+| 06 segmentation | pixel acc / mIoU | 0.82 / 0.58 | 0.83 / 0.58 |
+| 07 cloud | IoU / Dice | 0.93 / 0.96 | 0.93 / 0.96 |
+| 08 detection | mAP@0.5 | **0.47** | **0.45** |
+| 08 instances | IoU / count MAE (MAPE) | 0.58 / 3.0 (22 %) | 0.53 / 3.8 (21 %) |
+
+The log-space anchors are the headline model change: detection mAP@0.5 recovered
+from 0.42 to **0.47** val (rock 0.17 -> 0.29, car 0.18 -> 0.24, tree 0.32 ->
+0.49) after the parking-pad change had starved the small-object anchors.
+
+**Remaining backlog (next round).** The conifer is much better but still reads as
+a soft dark disc rather than a needle crown; `snow`/`wetland`/`gravel` semantic
+IoU stays low (0.0 / 0.25 / 0.24); detection at 96 px still caps car/rock; and
+`water`/`sand` remain fairly repetitive. Candidate next items: needle detail on
+conifers, a 128 px detection run for the resolution lesson, and further ground /
+water texture variation.
+
+
 
 

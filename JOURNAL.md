@@ -4,6 +4,31 @@ Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
 
+### 2026-09-23 18:25 — Round 31 (5-item review-driven iteration)
+
+Fresh review of all scenes/objects/materials + notebooks, then five prioritized
+items, one commit each:
+
+1. **Conifer**: the spiky dahlia/star with a dark hole is replaced by a soft
+   radial fir crown (concentric smooth blobs + batched needle streaks + small
+   dark top). Used in forest/wilderness/mountain/pasture.
+2. **Ground materials**: `soil` gains clods and dry cracks, `grass` gains blade
+   ticks and a second tonal mottle, `crop` gains finer plough bands and grain,
+   and `sand` gains a faint cross-ripple family plus finer grain.
+3. **Rock + mountain**: rock slabs are smaller/denser with lighter facets and
+   gravel grain; the mountain lowers its relief-overlay alpha (0.7 -> 0.45) and
+   adds more grass/soil patches so it stops washing out to flat grey.
+4. **Water/coast**: three shoreline harmonics, a two-band wet-sand gradient and
+   foam broken into short segments; rivers lose the single bright centre line for
+   faint dashed highlights.
+5. **Detection anchors**: `kmeans_anchors` now clusters `(log w, log h)` for the
+   varied detection boxes (`log_space=False` for the uniform forest crowns).
+   Detection mAP@0.5 recovered 0.42 -> **0.47** val / 0.44 -> **0.45** test
+   (rock 0.17 -> 0.29, car 0.18 -> 0.24, tree 0.32 -> 0.49).
+
+All eight notebooks re-run; 162 tests pass; ruff clean. Results table in README
+and Round-31 read-out/backlog in `VISUAL_QA.md` updated.
+
 ### 2026-09-23 12:10 — Round 30 (scale consistency, legend, boulders, avenues)
 
 - **Scale consistency (R28-5)**: parking-lot cars were `size*0.09-0.12` (~0.006-0.012
