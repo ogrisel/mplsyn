@@ -415,17 +415,17 @@ def mud(size: int = IMAGE_SIZE, seed: int | None = None):
 
 
 def rock(size: int = IMAGE_SIZE, seed: int | None = None):
-    """Rough rock face: large overlapping slabs with subtle lit facets."""
+    """Rough rock face: overlapping broken slabs with subtle lit facets."""
 
     def draw(ax, rng, budget):
         _mottle(ax, rng, budget, _area(size, 240), "#6b5f4d", spread=0.12, s=320, alpha=0.18)
         base_colors = ["#8a7d68", "#7d7160", "#948671", "#6f6353", "#877a66", "#9b8d78"]
-        n_slabs = max(80, int(size * size / 500))
+        n_slabs = max(220, int(size * size / 900))
         for _ in range(n_slabs):
             if budget.full:
                 break
-            cx, cy = rng.uniform(-0.08, 1.08, size=2)
-            radius = rng.uniform(0.11, 0.26)
+            cx, cy = rng.uniform(-0.05, 1.05, size=2)
+            radius = rng.uniform(0.035, 0.11)
             slab = _blob(rng, cx, cy, radius, n_vertices=int(rng.integers(6, 10)))
             color = base_colors[int(rng.integers(len(base_colors)))]
             budget.add_patch(
@@ -435,13 +435,13 @@ def rock(size: int = IMAGE_SIZE, seed: int | None = None):
                     closed=True,
                     facecolor=_jitter(rng, color, 0.06),
                     edgecolor=_jitter(rng, "#574c3d", 0.08),
-                    linewidth=0.7,
+                    linewidth=0.5,
                 ),
             )
             budget.add_patch(
                 ax,
                 patches.Polygon(
-                    _blob(rng, cx - 0.16 * radius, cy + 0.16 * radius, radius * 0.5, n_vertices=6),
+                    _blob(rng, cx - 0.18 * radius, cy + 0.18 * radius, radius * 0.45, n_vertices=6),
                     closed=True,
                     facecolor=_jitter(rng, "#8f8170", 0.05),
                     edgecolor="none",
@@ -450,13 +450,14 @@ def rock(size: int = IMAGE_SIZE, seed: int | None = None):
             budget.add_patch(
                 ax,
                 patches.Polygon(
-                    _blob(rng, cx + 0.2 * radius, cy - 0.2 * radius, radius * 0.5, n_vertices=6),
+                    _blob(rng, cx + 0.22 * radius, cy - 0.22 * radius, radius * 0.45, n_vertices=6),
                     closed=True,
                     facecolor=_jitter(rng, "#665a49", 0.06),
                     edgecolor="none",
                 ),
             )
-        _speckle(ax, rng, budget, _area(size, 150), "#6b5d49", spread=0.2, s=2.5)
+        _speckle(ax, rng, budget, _area(size, 90), "#6b5d49", spread=0.2, s=2.5)
+        _speckle(ax, rng, budget, _area(size, 140), "#a99b86", spread=0.15, s=1.8)
 
     return render_scene(size, "#7d7160", draw, seed=seed)
 

@@ -1347,15 +1347,15 @@ def mountain_scene(size: int = 600, seed: int | None = None) -> Scene:
         objects = []
         terrain = _terrain(rng)
         height, slope, _ = terrain
-        _relief_overlay(ax, budget, terrain, zorder=1, alpha=0.7)
+        _relief_overlay(ax, budget, terrain, zorder=1, alpha=0.45)
         _ground_patches(
             ax,
             rng,
             budget,
             materials,
-            ["grass", "soil", "soil"],
-            int(rng.integers(6, 12)),
-            size_range=(0.18, 0.42),
+            ["grass", "soil", "grass", "soil"],
+            int(rng.integers(9, 16)),
+            size_range=(0.22, 0.5),
             zorder=2,
         )
         for _ in range(int(rng.integers(4, 8))):
