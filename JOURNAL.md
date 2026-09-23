@@ -4,6 +4,27 @@ Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
 
+### 2026-09-24 00:05 — Round 33 (experiments and metric behaviour)
+
+Second educational round: after Round 32 taught how to *read* a score, this one
+teaches how to *run* an experiment and what the metrics hide.
+
+1. **Augmentation gallery (08)** — one training image under horizontal flip,
+   vertical flip and brightness/contrast, with boxes transformed the same way,
+   showing why flips preserve labels.
+2. **Seed variance (05)** — retrained the classifier with 3 seeds: validation
+   accuracy 0.843 / 0.971 / 0.700, **mean 0.838 ± 0.111**.
+3. **Class-weighted loss (06)** — plain CE mIoU 0.465 vs class-weighted 0.564;
+   rarest classes improve most (gravel 0.03 -> 0.15, wetland 0.17 -> 0.29).
+4. **Detection metric behaviour (08)** — mAP@0.5 0.472, @0.65 0.247, @0.75 0.060,
+   plus a score-threshold precision/recall/count sweep.
+5. **Calibration (07)** — reliability diagram + ECE, then temperature scaling:
+   ECE **0.117 -> 0.006** (T = 0.30).
+
+Cells inserted with `nbformat` (avoids hand-editing JSON); notebooks 05–08
+re-run, new figures described in-notebook. 162 tests pass; ruff clean.
+Plan/results in `ROADMAP.md`; read-out in `VISUAL_QA.md`.
+
 ### 2026-09-23 23:20 — Round 32 (educational value of the model notebooks)
 
 Reviewed notebooks 05–08 and found the teaching gap was in **interpreting**

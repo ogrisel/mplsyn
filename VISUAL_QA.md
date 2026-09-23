@@ -1179,3 +1179,16 @@ with IoU/Dice 0; the sweep peaks near 0.5 but the curve is flat-topped, so the
 threshold is a soft choice. 08 no-object mAP 0.000, mean-count baseline MAE 5.66
 vs model 3.00; the PR curves show `boat`/`building` strong and `car`/`rock`
 weak, which the single mAP hides.
+
+## Round 33 — experiments and metric behaviour in the model notebooks
+
+| Notebook | New figure / output | Read-out |
+|---|---|---|
+| 08 | augmentation gallery (original / h-flip / v-flip / jitter) | boxes mirror with the image, so flipped labels stay correct — the reason the augmentation is safe |
+| 05 | accuracy over 3 seeds | 0.843 / 0.971 / 0.700, mean 0.838 ± 0.111; single-run gaps below ~0.1 are noise |
+| 06 | per-class IoU: plain vs class-weighted CE | mIoU 0.465 -> 0.564; gravel 0.03 -> 0.15, wetland 0.17 -> 0.29 |
+| 08 | mAP at IoU 0.5 / 0.65 / 0.75; score-threshold sweep | 0.472 / 0.247 / 0.060 (loose boxes); precision/recall/count trade off against the threshold |
+| 07 | reliability diagram + temperature scaling | ECE 0.117 -> 0.006 at T = 0.30 |
+
+The figures render cleanly, axes are labelled, and each is described in its
+notebook. Notebook sizes stay under 5 MB (largest 4.68 MB).

@@ -453,3 +453,46 @@ iteration.
 
 Each item is one code change plus a re-run/inspection of the affected notebook,
 with the plots described in the notebook and the plan tracked here.
+
+## Implementation plan — Round 33 (experiments and metric behaviour)
+
+Round 32 taught how to *read* a score. This round teaches how to *run* an
+experiment and how the metrics behave under the hood.
+
+1. **Edu-6 — augmentation gallery (08).** Show one training image and its
+   horizontal flip, vertical flip and brightness/contrast jitter with the boxes
+   transformed, proving the labels stay valid. Augmentation is used but never
+   shown; seeing it is what makes the "why" click.
+2. **Edu-7 — seed variance (05).** Retrain the classifier with three seeds on a
+   short schedule and report validation accuracy as mean ± std, so learners see
+   that a single number hides run-to-run noise and judge differences against it.
+3. **Edu-8 — class-weighted loss (06).** Train the same U-Net with a
+   class-frequency-weighted cross-entropy and compare per-class IoU and mIoU to
+   the unweighted run, connecting the prevalence plot to a concrete remedy.
+4. **Edu-9 — detection metric behaviour (08).** Compute mAP at IoU 0.5 / 0.65 /
+   0.75 (what @0.5 hides about box tightness) and sweep the score threshold,
+   plotting precision / recall / count, to show the operating-point trade-off.
+5. **Edu-10 — probability calibration (07).** Reliability diagram and expected
+   calibration error for the cloud probabilities, then temperature scaling fit
+   on validation, showing that sigmoid output is not a calibrated probability.
+
+One item per iteration, each ending with the affected notebook re-run and the
+new figures described in the notebook.
+
+### Round 33 — results
+
+- **Augmentation gallery (08):** original / horizontal flip / vertical flip /
+  brightness-contrast of one training image with transformed boxes; labels stay
+  valid by construction.
+- **Seed variance (05):** validation accuracy over 3 seeds = [0.843, 0.971,
+  0.700], **mean 0.838 ± 0.111** — a concrete reminder that single-run
+  differences below ~0.1 are noise.
+- **Class-weighted loss (06):** plain CE mIoU **0.465** vs class-weighted
+  **0.564**; the rarest classes gain most (gravel 0.03 -> 0.15, wetland
+  0.17 -> 0.29).
+- **Detection metric behaviour (08):** mAP@0.50 **0.472**, @0.65 **0.247**,
+  @0.75 **0.060** — @0.5 hides very loose localisation; the score-threshold
+  sweep shows the precision/recall/count trade-off.
+- **Calibration (07):** ECE **0.117 -> 0.006** with temperature scaling
+  (T = 0.30), so the raw sigmoid is over/under-confident and a one-parameter fix
+  recalibrates it without touching accuracy.
