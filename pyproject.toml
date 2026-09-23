@@ -1,0 +1,53 @@
+[project]
+authors = [{name = "Olivier Grisel", email = "olivier.grisel@ensta.org"}]
+dependencies = []
+name = "mlpsyn"
+requires-python = ">= 3.14"
+version = "0.1.0"
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mlpsyn"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = [".pixi", "build", "dist"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["osx-arm64"]
+
+[tool.pixi.pypi-dependencies]
+mlpsyn = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+
+[tool.pixi.feature.dev.tasks]
+test = "pytest"
+lint = "ruff check ."
+format = "ruff format ."
+lab = "jupyter lab notebooks"
+install-torch = "python -m pip install torch"
+install-sklearn = "python -m pip install scikit-learn"
+
+[tool.pixi.dependencies]
+python = "3.14.*"
+matplotlib = ">=3.11.2,<4"
+numpy = ">=2.4.6,<3"
+pillow = ">=12.3.0,<13"
+
+[tool.pixi.feature.dev.dependencies]
+pytest = "*"
+ruff = "*"
+pip = "*"
+jupyterlab = ">=4.6.3,<5"
+
+[tool.pixi.environments]
+dev = ["dev"]
