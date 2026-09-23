@@ -230,45 +230,50 @@ def draw_conifer(
         ),
     )
     base = patches.Polygon(
-        _smooth_blob(rng, cx, cy, radius * 0.72, roughness=0.14), closed=True, edgecolor="none"
+        _smooth_blob(rng, cx, cy, radius * 0.82, roughness=0.16), closed=True, edgecolor="none"
     )
     _fill(ax, base, materials, "foliage", _jitter(rng, palette, 0.10), budget, zorder=3)
-    for layer, scale in enumerate([1.0, 0.74, 0.48]):
-        n_vertices = int(rng.integers(14, 20))
-        offset = rng.uniform(0.0, 2 * np.pi)
-        angles = offset + np.arange(n_vertices) * 2 * np.pi / n_vertices
-        outer = radius * scale
-        inner = outer * rng.uniform(0.5, 0.66)
-        radii = np.where(
-            np.arange(n_vertices) % 2 == 0,
-            outer * (1.0 + rng.uniform(-0.05, 0.05, n_vertices)),
-            inner * (1.0 + rng.uniform(-0.05, 0.05, n_vertices)),
+    # Soft concentric crowns (lighter rim -> darker heart), not a spiky star.
+    for layer, scale in enumerate([0.66, 0.42]):
+        blob = patches.Polygon(
+            _smooth_blob(rng, cx, cy, radius * scale, roughness=0.12),
+            closed=True,
+            edgecolor="none",
         )
-        ring = np.column_stack([cx + radii * np.cos(angles), cy + radii * np.sin(angles)])
         _fill(
             ax,
-            patches.Polygon(ring, closed=True, edgecolor="none"),
+            blob,
             materials,
             "foliage",
-            _jitter(rng, palette, 0.12 + 0.06 * layer),
+            _jitter(rng, palette, 0.10 + 0.06 * (layer + 1)),
             budget,
-            zorder=3 + layer,
+            zorder=4 + layer,
         )
-    budget.add_patch(
+    # Radial needle streaks give the fir its branch texture without a star outline.
+    n_needles = int(rng.integers(10, 15))
+    ang0 = rng.uniform(0.0, 2 * np.pi)
+    needle_segments = []
+    for k in range(n_needles):
+        angle = ang0 + k * 2 * np.pi / n_needles + rng.uniform(-0.08, 0.08)
+        inner = radius * 0.2
+        outer = radius * rng.uniform(0.72, 0.9)
+        needle_segments.append([
+            (cx + inner * np.cos(angle), cy + inner * np.sin(angle)),
+            (cx + outer * np.cos(angle), cy + outer * np.sin(angle)),
+        ])
+    budget.add_line_collection(
         ax,
-        patches.Circle(
-            (cx, cy),
-            radius * 0.34,
-            facecolor=_jitter(rng, "#2c5622", 0.10),
-            edgecolor="none",
-            zorder=6,
-        ),
+        needle_segments,
+        color=_jitter(rng, "#163d1c", 0.18),
+        linewidth=0.5,
+        alpha=0.5,
+        zorder=6,
     )
     budget.add_patch(
         ax,
         patches.Circle(
             (cx, cy),
-            radius * 0.13,
+            radius * 0.14,
             facecolor=_jitter(rng, "#16361a", 0.1),
             edgecolor="none",
             zorder=7,

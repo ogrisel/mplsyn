@@ -1091,4 +1091,39 @@ not degrade counting (val MAPE 23 %).
 instance val MAE **3.1** / **MAPE 23 %** / IoU **0.57** / detection 0.68,
 test MAE 3.4 / MAPE 23 % / IoU 0.56 / detection 0.66.
 
+## Round 31 — fresh code + notebook + visual review (plan)
+
+Reviewed the full scene / object / material vocabulary with fresh renders
+(`/tmp/scene_overview.png`, `/tmp/objs_overview.png`, `/tmp/mats_overview.png`,
+`/tmp/zoom.png`) and re-read the notebook structure and metrics.
+
+**What holds up.** Scene composition is varied and plausible; object scale is now
+consistent (parking fixed); shadows all fall down-right under an upper-left light;
+all views are plan; the training notebooks are well structured (objectives, spaces,
+losses, test split, failure galleries).
+
+**Defects found (severity):**
+
+| ID | Finding | Severity |
+|---|---|---|
+| A1 | **Conifer reads as a spiky dahlia/star** with a dark central hole, not a fir crown; appears in forest/mountain/wilderness/pasture | high |
+| A2 | **Grounds are flat**: `soil`, `grass`, `crop` have almost no texture; `sand` uses one identical sinusoidal ripple everywhere | high |
+| A3 | **Mountain is washed grey** with big flat polygonal facets; `rock` material is large-facet "confetti" | medium-high |
+| A4 | **Coastline is a perfectly straight horizontal line**; river banks carry harsh white lines; `water` texture repeats | medium |
+| A5 | Detection **small-object AP regressed** after the parking-pad change (rock 0.27->0.17, car 0.22->0.18) as k-means anchors shifted large | medium |
+
+**Prioritized plan (one item per iteration).**
+
+1. **Conifer crown** — replace the alternating-radius star with a soft radial fir
+   crown (concentric blobs + needle streaks, small top).
+2. **Ground materials** — add grain/mottle and per-seed variation to `soil`,
+   `grass`, `crop`; vary `sand` ripple wavelength/orientation and add grain.
+3. **Mountain / rock** — calmer hillshade, finer rock facets with subtle grain so
+   the mountain stops reading as flat grey polygons.
+4. **Water / coastline** — meander the shore, soften river banks (drop the white
+   lines), vary water tone/ripples, add a soft foam edge.
+5. **Detection anchors** — add an explicit small anchor (or more anchors) so rock
+   and car recover; document the resolution ceiling.
+
+
 
