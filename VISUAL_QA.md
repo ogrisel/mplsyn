@@ -1159,3 +1159,23 @@ water texture variation.
 
 
 
+
+## Round 32 — educational figures in the model notebooks
+
+This round adds interpretation aids (not new renders). The figures were
+inspected in the notebooks:
+
+| Notebook | New figure / output | What it teaches |
+|---|---|---|
+| 05 | majority-class baseline print (0.14 vs 0.97) | a score only means something above "do nothing" |
+| 06 | training curves; per-class IoU vs class prevalence; most-frequent-class baseline | overfitting / saturation; why rare classes dominate mIoU while accuracy looks high |
+| 07 | training curves; all-clear / all-cloud baselines; threshold sweep (IoU, Dice, precision, recall) | 0.5 is a convention; the operating point trades recall for precision |
+| 08 | detection + instance training curves; no-object and mean-count baselines; per-class precision-recall curves | what mAP averages; the floor/ceiling of the metric; count error vs a mean predictor |
+
+**Read-outs.** 05 baseline 0.143 (model 0.971). 06 baseline: high pixel accuracy,
+mIoU far below the model's 0.58; the prevalence plot shows the rare classes
+(`snow`, `gravel`, `wetland`) with the lowest IoU. 07 all-clear = 0.78 accuracy
+with IoU/Dice 0; the sweep peaks near 0.5 but the curve is flat-topped, so the
+threshold is a soft choice. 08 no-object mAP 0.000, mean-count baseline MAE 5.66
+vs model 3.00; the PR curves show `boat`/`building` strong and `car`/`rock`
+weak, which the single mAP hides.

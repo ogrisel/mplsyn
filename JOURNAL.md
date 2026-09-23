@@ -4,6 +4,28 @@ Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
 
+### 2026-09-23 23:20 — Round 32 (educational value of the model notebooks)
+
+Reviewed notebooks 05–08 and found the teaching gap was in **interpreting**
+results, not in the mechanics. Implemented five items:
+
+1. **Training curves everywhere** — 06, 07 and both 08 models now plot loss and
+   the task metric vs epoch with the best epoch marked (05 already did).
+2. **Trivial baselines** — 05 majority-class accuracy (0.14 vs model 0.97);
+   06 most-frequent-class baseline (high accuracy, near-zero mIoU); 07 all-clear
+   / all-cloud (all-clear scores 0.78 accuracy while detecting no cloud); 08
+   no-object mAP 0 and mean-count MAE (5.66 vs model 3.00).
+3. **Operating point for clouds (07)** — threshold sweep of IoU / Dice /
+   precision / recall, showing 0.5 is a convention.
+4. **Class prevalence vs per-class IoU (06)** — shows why rare classes dominate
+   mIoU even when pixel accuracy looks high.
+5. **Per-class precision-recall curves (08)** — refactored
+   `average_precision` into `precision_recall_curve` and plotted AP per class,
+   showing what mAP averages.
+
+All notebooks re-run; 05–08 outputs refreshed; every new figure is described in
+its notebook. 162 tests pass; ruff clean.
+
 ### 2026-09-23 18:25 — Round 31 (5-item review-driven iteration)
 
 Fresh review of all scenes/objects/materials + notebooks, then five prioritized

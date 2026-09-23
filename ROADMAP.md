@@ -422,3 +422,34 @@ removed). Order is by teaching value, not by mAP.
    as an explicit lesson on the resolution ceiling.
 6. **M2 / D3 / L1 / L2**: dense-crown mask quality, cross-scene scale/density
    consistency, duplicate boxes, and prototype count stability.
+
+## Implementation plan — Round 32 (educational value of the model notebooks)
+
+Review of notebooks 05–08: they already state objectives, prediction/target
+spaces, losses and metrics, verify the formulas on toy data, keep a held-out
+test split and show failure galleries. The gaps are all about **reading and
+interpreting** the results, so the round adds five teaching aids, one per
+iteration.
+
+1. **Edu-1 — training curves everywhere.** Notebook 05 already plots training
+   loss and validation accuracy; plot the same (loss + the task metric vs
+   epoch, with the best epoch marked) in 06, 07 and both 08 models, so learners
+   can *see* the fit and the point of diminishing returns.
+2. **Edu-2 — trivial baselines.** Put every headline score next to a naive
+   baseline: majority-class accuracy (05), all-background mIoU (06),
+   all-clear / all-cloud IoU (07) and a no-object detection baseline (08), plus
+   the mean tree count for the instance task. A metric is only meaningful
+   relative to what "doing nothing" scores.
+3. **Edu-3 — operating point for clouds (07).** Sweep the probability threshold
+   and plot IoU / Dice / precision / recall plus the precision-recall curve, to
+   show that 0.5 is a convention and that the operating point trades recall for
+   precision.
+4. **Edu-4 — class prevalence vs per-class IoU (06).** Bar/annotate class
+   frequency next to per-class IoU so the learner sees why rare classes drag
+   mIoU down and why pixel accuracy hides them.
+5. **Edu-5 — per-class precision-recall curves (08).** Plot the PR curve for
+   each detection class and mark the AP, explaining what mAP averages and why a
+   rare class's AP is noisy.
+
+Each item is one code change plus a re-run/inspection of the affected notebook,
+with the plots described in the notebook and the plan tracked here.
