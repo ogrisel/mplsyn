@@ -970,40 +970,79 @@ def draw_orchard(ax, rng, budget, cx, cy, size, materials=None, rotation=None):
 
 
 def draw_greenhouse(ax, rng, budget, cx, cy, size, materials=None, rotation=None):
-    """A row of greenhouses / polytunnels seen top-down."""
+    """A block of glasshouses seen top-down: parallel gabled glazed ranges."""
     if rotation is None:
         rotation = _random_rotation(rng)
     width = size
-    height = size * rng.uniform(0.5, 0.8)
-    n = max(3, int(width / (size * 0.18)))
-    color = _jitter(rng, "#d8dde0", 0.03)
-    for k in range(n):
+    height = size * rng.uniform(0.55, 0.8)
+    n_ranges = max(3, int(width / (size * 0.2)))
+    range_width = width / n_ranges
+    glass = _jitter(rng, "#cfe0da", 0.05)
+    # A soft drop shadow under the whole glasshouse block.
+    shadow = _rotate([(0.05 * width, -0.08 * height)], cx, cy, rotation)[0]
+    budget.add_patch(
+        ax,
+        patches.Rectangle(
+            (shadow[0] - width / 2, shadow[1] - height / 2),
+            width,
+            height,
+            angle=rotation,
+            rotation_point="center",
+            facecolor=_SHADOW,
+            edgecolor="none",
+            zorder=2,
+        ),
+    )
+    for k in range(n_ranges):
         if budget.full:
             break
-        local_x = -width / 2 + (k + 0.5) * width / n
-        px, py = _rotate([(local_x, 0.0)], cx, cy, rotation)[0]
-        tunnel_w = (width / n) * 0.7
+        local_x = -width / 2 + (k + 0.5) * range_width
+        center = _rotate([(local_x, 0.0)], cx, cy, rotation)[0]
+        panel_width = range_width * 0.82
+        # Translucent glazed panel.
         budget.add_patch(
             ax,
-            patches.Ellipse(
-                (float(px), float(py)),
-                tunnel_w,
-                height * 0.92,
+            patches.Rectangle(
+                (center[0] - panel_width / 2, center[1] - height / 2),
+                panel_width,
+                height,
                 angle=rotation,
-                facecolor=color,
-                edgecolor="#8a8f92",
+                rotation_point="center",
+                facecolor=_jitter(rng, glass, 0.06),
+                edgecolor="#8f9a96",
                 linewidth=0.5,
                 zorder=3,
             ),
         )
-        ends = _rotate([(local_x, -height * 0.38), (local_x, height * 0.38)], cx, cy, rotation)
+        # Bright ridge line along the apex of the gable.
+        ridge = _rotate(
+            [(local_x, -height / 2), (local_x, height / 2)], cx, cy, rotation
+        )
         budget.add_line(
             ax,
-            [ends[0][0], ends[1][0]],
-            [ends[0][1], ends[1][1]],
-            color="#b9bec1",
-            linewidth=0.5,
+            [ridge[0][0], ridge[1][0]],
+            [ridge[0][1], ridge[1][1]],
+            color="#ffffff",
+            linewidth=0.6,
+            alpha=0.6,
             zorder=4,
+        )
+        # Perpendicular frame ribs (batched as one collection).
+        n_ribs = max(2, int(height / (size * 0.12)))
+        rib_segments = []
+        for r in range(1, n_ribs):
+            local_y = -height / 2 + r * height / n_ribs
+            segment = _rotate(
+                [(local_x - panel_width / 2, local_y), (local_x + panel_width / 2, local_y)],
+                cx,
+                cy,
+                rotation,
+            )
+            rib_segments.append(
+                [(segment[0][0], segment[0][1]), (segment[1][0], segment[1][1])]
+            )
+        budget.add_line_collection(
+            ax, rib_segments, color="#aeb8b4", linewidth=0.4, zorder=4
         )
     return _rotated_bbox(cx, cy, width, height, rotation)
 
