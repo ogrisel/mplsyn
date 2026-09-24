@@ -4,6 +4,23 @@ Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
 
+### 2026-09-24 10:40 — Round 34 (review-driven: wadi, greenhouse, instance-by-density)
+
+Fresh inspection (scene/object re-renders + notebook figure review) surfaced
+three issues; one commit each:
+
+1. **Arid wadi** — the dry riverbed drew a single gravel ribbon with a dark
+   centre line, so it read as a road. It is now a pale sandy apron with two or
+   three **braided gravel threads** and scattered pebbles, no centre line.
+2. **Greenhouse** — drew plain light ellipses (white blobs). Now parallel gabled
+   **glazed ranges** with a bright apex ridge, frame ribs and a soft shadow.
+3. **Instance quality by density (08)** — the instance metrics are now split by
+   canopy density: count MAE 2.29 / 3.54 / 4.33 and mean IoU 0.596 / 0.592 /
+   0.554 for sparse / medium / dense, plus an IoU histogram.
+
+Also refreshed the stale generator read-outs (02: conifer, greenhouse, parking;
+03: arid wadi). All eight notebooks re-run; 162 tests pass; ruff clean.
+
 ### 2026-09-24 00:05 — Round 33 (experiments and metric behaviour)
 
 Second educational round: after Round 32 taught how to *read* a score, this one

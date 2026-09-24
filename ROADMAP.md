@@ -518,3 +518,16 @@ Three concrete issues, plus remaining backlog.
 Remaining backlog (not this round): mountain still washes toward flat grey; the
 transition-scene field mosaic keeps a straight inner edge on some seeds; urban
 roads are uniformly dark. These stay on the backlog for a later round.
+
+### Round 34 — results
+
+- **R34-1 wadi:** arid scenes now show a braided sandy dry channel (pale apron,
+  two-three gravel threads, pebbles, no centre line) instead of a road-like
+  ribbon.
+- **R34-2 greenhouse:** reads as parallel gabled glazed ranges with frame ribs
+  and a shadow, not white ellipses.
+- **R34-3 instance by density (08):** count MAE **2.29 / 3.54 / 4.33** and mean
+  IoU **0.596 / 0.592 / 0.554** for sparse / medium / dense — the failure mode is
+  now quantified.
+- Generator read-outs in 02 (conifer, greenhouse, parking) and 03 (arid wadi)
+  refreshed to match the current renders.

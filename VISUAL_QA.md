@@ -1192,3 +1192,16 @@ weak, which the single mAP hides.
 
 The figures render cleanly, axes are labelled, and each is described in its
 notebook. Notebook sizes stay under 5 MB (largest 4.68 MB).
+
+## Round 34 — review-driven generator fixes + instance analysis
+
+| Item | Change | Read-out |
+|---|---|---|
+| arid wadi | braided sandy channel, no centre line | reads as a dry riverbed, not a road (arid 3/8 inspected) |
+| greenhouse | parallel glazed ranges with frame ribs | reads as glasshouses from above (`pasture 4` inspected) |
+| instance by density (08) | MAE / IoU split by tree count + IoU histogram | MAE 2.29/3.54/4.33 and IoU 0.60/0.59/0.55 for sparse/medium/dense |
+
+Stale generator read-outs refreshed: notebook 02 (conifer + greenhouse + parking)
+and notebook 03 (arid wadi). Remaining backlog: mountain washes toward flat
+grey, and some seeds keep a straight inner edge on the transition-scene field
+mosaic.
