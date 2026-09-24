@@ -531,3 +531,38 @@ roads are uniformly dark. These stay on the backlog for a later round.
   now quantified.
 - Generator read-outs in 02 (conifer, greenhouse, parking) and 03 (arid wadi)
   refreshed to match the current renders.
+
+## Implementation plan — Round 35 (clarity of the model notebooks)
+
+The model notebooks cover the mechanics and the metrics; this round makes the
+abstract encodings **visible** and the exercises **self-checkable**.
+
+1. **Clar-1 — anchor-assignment figure (08).** The detection targets are
+   `(cell, anchor)` slots but this is only shown numerically. Draw a few training
+   images with the GT boxes, the grid cell each object falls in and the anchor
+   index it matched, so the encoding becomes concrete.
+2. **Clar-2 — box-relative mask target figure (08).** Show one forest instance:
+   image, instance mask, its bounding box, and the **cropped + resized
+   `MASK_SIZE` target** that the mask head actually learns, explaining the
+   Mask R-CNN-style target.
+3. **Clar-3 — key-terms box per notebook (05-08).** A short glossary of the
+   jargon each notebook introduces (logits, softmax, CE; IoU/mIoU, ignore_index;
+   Dice, BCE-with-logits; anchor, objectness, NMS, mAP, ECE), so a reader never
+   has to leave the notebook to decode a term.
+4. **Clar-4 — exercise self-checks (05-08).** Append a "what to expect / how to
+   check" note to each exercise so learners can verify their own experiments
+   instead of guessing whether they got it right.
+
+Each item is one change plus a re-run of the affected notebook, with the new
+figure/box described in the notebook.
+
+### Round 35 — results
+
+- **Clar-1 anchor figure (08):** three training images with GT boxes, the target
+  grid cell and the matched anchor index (`aK`) drawn, plus the positive count.
+- **Clar-2 mask-target figure (08):** image / instance map / one instance with
+  its box / the `24x24` crop+resize target — the box-relative mask the head
+  learns.
+- **Clar-3 key terms:** a compact glossary cell added to 05, 06, 07 and 08.
+- **Clar-4 self-checks:** a "what to expect" note appended to every exercise set
+  (05-08) so learners can verify their experiments.

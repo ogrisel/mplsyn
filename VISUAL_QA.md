@@ -1205,3 +1205,15 @@ Stale generator read-outs refreshed: notebook 02 (conifer + greenhouse + parking
 and notebook 03 (arid wadi). Remaining backlog: mountain washes toward flat
 grey, and some seeds keep a straight inner edge on the transition-scene field
 mosaic.
+
+## Round 35 — clarity of the model notebooks
+
+| Notebook | Addition | Read-out |
+|---|---|---|
+| 08 | anchor-assignment figure (GT boxes, target cell, matched anchor) | the abstract `(cell, anchor)` encoding is now visible; dense images show up to 24 positives |
+| 08 | box-relative mask-target figure (image / instances / one instance+box / 24x24 target) | makes the Mask R-CNN-style crop-and-resize target concrete |
+| 05-08 | **Key terms** glossary cell | logits/softmax/CE, IoU/mIoU/ignore_index, Dice/BCE, anchor/NMS/mAP/ECE defined in place |
+| 05-08 | exercise **what to expect** notes | learners can self-check each experiment |
+
+Both new 08 figures render cleanly and are described in the notebook; sizes stay
+under 5 MB.

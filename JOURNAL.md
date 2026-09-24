@@ -4,6 +4,24 @@ Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
 
+### 2026-09-24 11:50 — Round 35 (clarity of the model notebooks)
+
+Four clarity-focused changes to the model notebooks:
+
+1. **Anchor-assignment figure (08)** — for three training images, draws each GT
+   box, the grid cell its centre falls in and the matched anchor index, so the
+   abstract `(cell, anchor)` target becomes visible.
+2. **Box-relative mask target figure (08)** — image / instance map / one
+   fully-visible instance with its box / the `24x24` crop+resize target, making
+   the Mask R-CNN-style target concrete.
+3. **Key terms** — a compact glossary cell in 05, 06, 07 and 08 defining the
+   jargon each notebook introduces.
+4. **Exercise self-checks** — a "what to expect" note appended to every exercise
+   set so learners can verify their own experiments.
+
+All model notebooks re-run; 162 tests pass; ruff clean. New figures described
+in-notebook; results in `ROADMAP.md` / `VISUAL_QA.md`.
+
 ### 2026-09-24 10:40 — Round 34 (review-driven: wadi, greenhouse, instance-by-density)
 
 Fresh inspection (scene/object re-renders + notebook figure review) surfaced
