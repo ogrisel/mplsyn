@@ -496,3 +496,25 @@ new figures described in the notebook.
 - **Calibration (07):** ECE **0.117 -> 0.006** with temperature scaling
   (T = 0.30), so the raw sigmoid is over/under-confident and a one-parameter fix
   recalibrates it without touching accuracy.
+
+## Implementation plan — Round 34 (review-driven)
+
+Fresh inspection of the notebook figures and a re-render of all scenes / objects.
+Three concrete issues, plus remaining backlog.
+
+1. **R34-1 — arid wadi reads as a road.** The dry riverbed draws a single gravel
+   ribbon with a dark centre line (`#6f6349`, the road convention). Rework it
+   into a **braided** dry channel: two or three narrower sandy/gravel threads,
+   light gravel bars between them, pebble speckle and no centre line.
+2. **R34-2 — greenhouse reads as white blobs.** `draw_greenhouse` draws a row of
+   plain light ellipses. Replace with rectangular **glazed ranges**: translucent
+   pale-green panels, a frame ridge grid, per-range tone variation and a soft
+   shadow, so it reads as glasshouses from above.
+3. **R34-3 — instance quality by density (08).** The instance metrics are single
+   averages; report **count MAE / IoU / detection by regime** (sparse / medium /
+   dense / avenue) plus an IoU histogram, so the dense-canopy failure mode is
+   quantified rather than asserted.
+
+Remaining backlog (not this round): mountain still washes toward flat grey; the
+transition-scene field mosaic keeps a straight inner edge on some seeds; urban
+roads are uniformly dark. These stay on the backlog for a later round.

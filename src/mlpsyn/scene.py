@@ -1445,32 +1445,56 @@ def arid_scene(size: int = 600, seed: int | None = None) -> Scene:
                 b = (rng.uniform(0.2, 0.8), rng.uniform(0.85, 1.1))
             path = _meander_points(rng, a, b, n=26, meander=0.14)
             width = rng.uniform(0.09, 0.13)
+            # A sandy apron where the channel has wandered.
             budget.add_patch(
                 ax,
                 patches.Polygon(
-                    _ribbon(path, width * 1.6),
+                    _ribbon(path, width * 1.7),
                     closed=True,
-                    facecolor=_jitter(rng, "#bfae82", 0.05),
+                    facecolor=_jitter(rng, "#cfbe93", 0.05),
                     edgecolor="none",
                     zorder=2,
                 ),
             )
-            fill_patch(
-                ax,
-                patches.Polygon(_ribbon(path, width), closed=True),
-                materials["gravel"],
-                budget=budget,
-                zorder=2,
-            )
-            budget.add_line(
-                ax,
-                path[:, 0].tolist(),
-                path[:, 1].tolist(),
-                color="#6f6349",
-                linewidth=1.1,
-                alpha=0.55,
-                zorder=3,
-            )
+            # Braided dry threads of gravel inside the apron: no straight centre
+            # line (that reads as a road), just several shallow channels.
+            tangent = np.gradient(path, axis=0)
+            normal = np.column_stack([-tangent[:, 1], tangent[:, 0]])
+            normal /= np.linalg.norm(normal, axis=1, keepdims=True) + 1e-9
+            for thread_index in range(int(rng.integers(2, 4))):
+                lateral = (thread_index - 1) * width * 0.5
+                drift = rng.normal(0.0, width * 0.18, size=len(path))
+                thread = path + normal * (lateral + drift)[:, None]
+                fill_patch(
+                    ax,
+                    patches.Polygon(
+                        _ribbon(thread, width * rng.uniform(0.35, 0.55)), closed=True
+                    ),
+                    materials["gravel"],
+                    budget=budget,
+                    zorder=2,
+                )
+            # Scattered pebbles and one or two boulders in the bed.
+            for _ in range(int(rng.integers(12, 20))):
+                if budget.full:
+                    break
+                point_index = int(rng.integers(len(path)))
+                px = path[point_index, 0] + normal[point_index, 0] * rng.uniform(
+                    -width * 0.7, width * 0.7
+                )
+                py = path[point_index, 1] + normal[point_index, 1] * rng.uniform(
+                    -width * 0.7, width * 0.7
+                )
+                budget.add_patch(
+                    ax,
+                    patches.Circle(
+                        (float(px), float(py)),
+                        rng.uniform(0.004, 0.012),
+                        facecolor=_jitter(rng, "#9a8f78", 0.12),
+                        edgecolor="none",
+                        zorder=3,
+                    ),
+                )
         for _ in range(int(rng.integers(8, 15))):
             if budget.full:
                 break
