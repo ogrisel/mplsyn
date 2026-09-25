@@ -1284,3 +1284,14 @@ mAP fell to 0.41/0.39 - opaque clouds hide small objects, an honest ceiling.
 - **08 detection**: the metric-behaviour figure gained a **per-class
   ground-truth histogram**, so AP asymmetries can be told apart from data
   scarcity / small object size.
+
+## Round 42 — model-notebook review
+
+Inspected the latest metrics and figures of 05–08 (no stale numbers in the
+read-outs). Metrics: 05 0.80/0.71, 06 mIoU 0.50/0.51, 07 IoU 0.84/0.85, 08
+detection 0.41/0.39, instance IoU 0.56. Defects: 07's evaluation read-out is
+above its figure; 06/07 lack an evaluation-protocol note; one figure each in
+06 and 08 lacks a read-out; titles still say "PyTorch + MPS"; 05's seed-variance
+has no figure. Plan recorded in `ROADMAP.md` (Round 42): fix read-outs/titles,
+add a seed-variance figure, recipe boxes, a detection error taxonomy, a
+resolution ablation, and a cross-notebook learning path.

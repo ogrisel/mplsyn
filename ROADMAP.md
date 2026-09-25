@@ -678,3 +678,45 @@ drops to 0.41/0.39** because opaque clouds hide the small objects entirely
   confusion matrix.
 - **Detection (08)**: per-class ground-truth histogram beside the score-threshold
   sweep, to read AP asymmetries against data frequency.
+
+## Round 42 — review of the model notebooks (planned)
+
+**Review.** Metrics after the last rounds: 05 classification 0.80/0.71 (val/test);
+06 segmentation mIoU 0.50/0.51; 07 cloud IoU 0.84/0.85; 08 detection mAP@0.5
+0.41/0.39, instance IoU 0.56. Figures and read-outs are in good shape and no
+read-out cites a stale number. Defects found:
+
+- 07: the evaluation **figure read-out sits above the Evaluation section** (a
+  marker matched the training loop's `evaluate(...)` unpacking, not the eval
+  cell); 06 and 07 also lack an explicit **evaluation-protocol** note.
+- 06 has 6 figure cells but 5 read-outs (the class-colour legend); 08 has 9
+  figure cells but 8 read-outs (`colorize_instances`).
+- 06/07/08 titles still say "**PyTorch + MPS**" although the device is now
+  auto-selected (cuda/mps/xpu/cpu).
+- 05's seed-variance result is a print-only cell with no figure/read-out.
+- Detection mAP is now the weakest metric because ~40 % opaque cloud cover hides
+  small objects.
+
+**Prioritized plan (for the next implementation rounds).**
+
+1. **P1 — fix the read-out defects**: move 07's evaluation read-out below the
+   figure, add the missing read-outs (06 colour legend, 08 `colorize_instances`),
+   add a one-line evaluation-protocol note to 06/07, and retitle 06/07/08 to
+   "PyTorch (CUDA / MPS / XPU / CPU)".
+2. **P1 — 05 seed-variance figure**: plot the three seed accuracies with their
+   mean ± std and add a read-out (turns a print into a teaching figure).
+3. **P2 — training-recipe box** per notebook: learning rate, epochs, batch size,
+   augmentation, split sizes, parameter count, one compact table at the top of
+   the training section.
+4. **P2 — detection error taxonomy (08)**: split the false positives into
+   background/localisation/duplicate/class-confusion (using the existing greedy
+   matching) and show a small breakdown, so the low `car`/`rock` AP is
+   explained rather than just reported.
+5. **P2 — resolution ablation (08)**: a short 64 px vs 96 px detector comparison
+   (the ROADMAP M1 item) to demonstrate the resolution ceiling.
+6. **P3 — cross-notebook learning path**: a short "how the notebooks build on
+   each other" map in the README (classification -> segmentation -> cloud ->
+   detection/instance).
+7. **P3 — segmentation rare-class strategy**: the class-weighted experiment
+   exists; extend it with a short note/table of what more (dice loss, class
+   sampling) would change.
