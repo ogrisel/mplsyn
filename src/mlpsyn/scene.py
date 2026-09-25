@@ -1055,6 +1055,19 @@ def urban_scene(size: int = 600, seed: int | None = None) -> Scene:
             draw_road(ax, rng, budget, points=points, width=0.085, materials=materials)
             corridors.append((points, 0.085))
 
+        # Zebra crossings on a subset of the street intersections.
+        for i in range(1, n):
+            for j in range(1, n):
+                if rng.random() < 0.12 and not budget.full:
+                    point = transform([(x_offsets[i], y_offsets[j])])[0]
+                    if 0.06 <= point[0] <= 0.94 and 0.06 <= point[1] <= 0.94:
+                        bbox = OBJECTS["crossing"](
+                            ax, rng, budget, float(point[0]), float(point[1]),
+                            float(step * rng.uniform(0.4, 0.55)),
+                            materials=materials, rotation=theta,
+                        )
+                        objects.append(SceneObject("crossing", bbox))
+
         cells = [(i, j) for i in range(n) for j in range(n)]
         rng.shuffle(cells)
         n_park = int(rng.integers(2, 5))
@@ -1122,7 +1135,14 @@ def urban_scene(size: int = 600, seed: int | None = None) -> Scene:
                     )
                     objects.append(SceneObject("pool", bbox))
                     continue
-                if rng.random() < 0.16:
+                if rng.random() < 0.12:
+                    bbox = OBJECTS["planter"](
+                        ax, rng, budget, cx, cy, step * rng.uniform(0.22, 0.36),
+                        materials=materials, rotation=theta,
+                    )
+                    objects.append(SceneObject("planter", bbox))
+                    continue
+                if rng.random() < 0.20:
                     bbox = OBJECTS["tree"](
                         ax, rng, budget, cx, cy, step * rng.uniform(0.4, 0.6), materials=materials
                     )
@@ -1135,6 +1155,13 @@ def urban_scene(size: int = 600, seed: int | None = None) -> Scene:
                 if building_size < step * 0.24:
                     continue
                 building_rot = theta + float(rng.uniform(-12.0, 12.0))
+                # A paved sidewalk apron around some buildings.
+                if rng.random() < 0.5 and not budget.full:
+                    pavement_bbox = OBJECTS["pavement"](
+                        ax, rng, budget, cx, cy, building_size * rng.uniform(1.25, 1.5),
+                        materials=materials, rotation=building_rot,
+                    )
+                    objects.append(SceneObject("pavement", pavement_bbox))
                 bbox = draw_building(
                     ax,
                     rng,
@@ -1148,7 +1175,7 @@ def urban_scene(size: int = 600, seed: int | None = None) -> Scene:
                 objects.append(SceneObject("building", bbox))
                 # A second, smaller building fills the block like a real city
                 # block instead of leaving a large slab of bare concrete.
-                if rng.random() < 0.6 and not budget.full:
+                if rng.random() < 0.7 and not budget.full:
                     offset = building_size * rng.uniform(0.55, 0.85)
                     angle = building_rot + float(rng.uniform(-90.0, 90.0))
                     second_x = cx + offset * np.cos(np.deg2rad(angle))
@@ -1454,13 +1481,15 @@ def arid_scene(size: int = 600, seed: int | None = None) -> Scene:
                 patches.Polygon(
                     _ribbon(path, width * 1.7),
                     closed=True,
-                    facecolor=_jitter(rng, "#cfbe93", 0.05),
+                    facecolor=_jitter(rng, "#d8b978", 0.04),
                     edgecolor="none",
                     zorder=2,
                 ),
             )
             # Braided dry threads of gravel inside the apron: no straight centre
-            # line (that reads as a road), just several shallow channels.
+            # line (that reads as a road), just several shallow channels. The
+            # gravel is blended toward the sand so the bed stays close to the
+            # surrounding colour instead of standing out as a grey ribbon.
             tangent = np.gradient(path, axis=0)
             normal = np.column_stack([-tangent[:, 1], tangent[:, 0]])
             normal /= np.linalg.norm(normal, axis=1, keepdims=True) + 1e-9
@@ -1476,6 +1505,7 @@ def arid_scene(size: int = 600, seed: int | None = None) -> Scene:
                     materials["gravel"],
                     budget=budget,
                     zorder=2,
+                    alpha=0.5,
                 )
             # Scattered pebbles and one or two boulders in the bed.
             for _ in range(int(rng.integers(12, 20))):
@@ -1493,8 +1523,9 @@ def arid_scene(size: int = 600, seed: int | None = None) -> Scene:
                     patches.Circle(
                         (float(px), float(py)),
                         rng.uniform(0.004, 0.012),
-                        facecolor=_jitter(rng, "#9a8f78", 0.12),
+                        facecolor=_jitter(rng, "#c2a877", 0.10),
                         edgecolor="none",
+                        alpha=0.7,
                         zorder=3,
                     ),
                 )

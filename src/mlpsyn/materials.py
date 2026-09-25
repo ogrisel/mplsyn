@@ -228,21 +228,17 @@ def asphalt(size: int = IMAGE_SIZE, seed: int | None = None):
 
 
 def concrete(size: int = IMAGE_SIZE, seed: int | None = None):
-    """Light mottled concrete with expansion joints and potholes."""
+    """Light concrete: fine mottling, aggregate grain and a few potholes.
+
+    No large expansion-joint lines: at plot scale they look like oversized
+    cracks, so the surface is textured only at the aggregate scale.
+    """
 
     def draw(ax, rng, budget):
         _mottle(ax, rng, budget, _area(size, 500), "#b0ada6", spread=0.05, s=260, alpha=0.08)
-        for _ in range(int(rng.integers(2, 5))):
-            angle = rng.uniform(0.0, 180.0)
-            _cross_lines(
-                ax,
-                rng,
-                budget,
-                angle,
-                rng.uniform(0.18, 0.35),
-                _jitter(rng, "#8f8c85", 0.05),
-                width=rng.uniform(0.6, 1.2),
-            )
+        _mottle(ax, rng, budget, _area(size, 900), "#a9a69f", spread=0.05, s=180, alpha=0.07)
+        _speckle(ax, rng, budget, _area(size, 60), "#c3c0b9", spread=0.10, s=2.0)
+        _speckle(ax, rng, budget, _area(size, 220), "#9a978f", spread=0.15, s=1.4)
         for _ in range(int(rng.integers(3, 8))):
             cx, cy = rng.uniform(0.0, 1.0, size=2)
             budget.add_patch(

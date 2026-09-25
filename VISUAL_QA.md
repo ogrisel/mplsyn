@@ -1238,3 +1238,15 @@ accuracy fell to **0.74** (was 1.00), with per-class accuracy 0.56 (coastal) to
 blurring. Three transitional scene types (`savanna`, `woodland_pasture`,
 `scrubland`) were added and inspected in 03; the mixture ceiling is documented in
 the notebook. 169 tests pass.
+
+## Round 38 — wadi colour, urban objects, translucent clouds
+
+- **arid wadi** now blends with the sand (sand-tone apron, 50 %-alpha gravel
+  threads, sandy pebbles) instead of reading as a grey ribbon.
+- **concrete** lost its large expansion-joint lines; **urban** scenes gained
+  zebra `crossing`s, tiled `pavement` aprons, `planter`s and more trees /
+  second buildings (inspected across 8 seeds - blocks are visibly busier).
+- **clouds** are semi-transparent by default (opacity 0.6, was 0.9) and more
+  frequent (~40 % in 06/08, 48 % in 04); the ground stays visible through them.
+- Metrics after the changes: 05 0.78/0.82, 06 mIoU 0.49, 07 IoU 0.72/0.76,
+  08 det 0.46/0.47, instance IoU 0.57.

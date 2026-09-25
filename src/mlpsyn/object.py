@@ -34,6 +34,7 @@ __all__ = [
     "draw_bush",
     "draw_car",
     "draw_conifer",
+    "draw_crossing",
     "draw_field_plot",
     "draw_field_polygon",
     "draw_greenhouse",
@@ -41,6 +42,8 @@ __all__ = [
     "draw_object",
     "draw_orchard",
     "draw_parking_lot",
+    "draw_pavement",
+    "draw_planter",
     "draw_plaza",
     "draw_pond",
     "draw_pool",
@@ -1256,6 +1259,100 @@ def draw_river(
     return _polyline_bbox(center, width * 1.45)
 
 
+def draw_crossing(ax, rng, budget, cx, cy, size, materials=None, rotation=None):
+    """A zebra crossing: a short asphalt patch with white stripes."""
+    if rotation is None:
+        rotation = _random_rotation(rng)
+    length = size
+    width = size * 0.5
+    budget.add_patch(
+        ax,
+        patches.Rectangle(
+            (cx - length / 2, cy - width / 2),
+            length,
+            width,
+            angle=rotation,
+            rotation_point="center",
+            facecolor=_jitter(rng, "#46464a", 0.04),
+            edgecolor="none",
+            zorder=3,
+        ),
+    )
+    n_stripes = max(3, int(length / (size * 0.14)))
+    stripe_width = length / n_stripes * 0.5
+    for k in range(n_stripes):
+        local_x = -length / 2 + (k + 0.5) * length / n_stripes
+        stripe_center = _rotate([(local_x, 0.0)], cx, cy, rotation)[0]
+        budget.add_patch(
+            ax,
+            patches.Rectangle(
+                (stripe_center[0] - stripe_width / 2, stripe_center[1] - width * 0.42),
+                stripe_width,
+                width * 0.84,
+                angle=rotation,
+                rotation_point="center",
+                facecolor=_jitter(rng, "#eae7de", 0.03),
+                edgecolor="none",
+                zorder=4,
+            ),
+        )
+    return _rotated_bbox(cx, cy, length, width, rotation)
+
+
+def draw_pavement(ax, rng, budget, cx, cy, size, materials=None, rotation=None):
+    """A paved sidewalk / apron: a light tiled rectangle."""
+    if rotation is None:
+        rotation = _random_rotation(rng)
+    width = size
+    height = size * rng.uniform(0.28, 0.45)
+    budget.add_patch(
+        ax,
+        patches.Rectangle(
+            (cx - width / 2, cy - height / 2),
+            width,
+            height,
+            angle=rotation,
+            rotation_point="center",
+            facecolor=_jitter(rng, "#d7d4cc", 0.04),
+            edgecolor="#b3b0a8",
+            linewidth=0.4,
+            zorder=3,
+        ),
+    )
+    n_tiles = max(2, int(width / (size * 0.2)))
+    segments = []
+    for k in range(1, n_tiles):
+        local_x = -width / 2 + k * width / n_tiles
+        segment = _rotate([(local_x, -height / 2), (local_x, height / 2)], cx, cy, rotation)
+        segments.append([(segment[0][0], segment[0][1]), (segment[1][0], segment[1][1])])
+    budget.add_line_collection(ax, segments, color="#bdbab2", linewidth=0.4, zorder=4)
+    return _rotated_bbox(cx, cy, width, height, rotation)
+
+
+def draw_planter(ax, rng, budget, cx, cy, size, materials=None, rotation=None):
+    """A small planted bed: a grass square with a tree or a bush."""
+    if rotation is None:
+        rotation = _random_rotation(rng)
+    width = size
+    height = size * rng.uniform(0.7, 1.0)
+    patch = patches.Rectangle(
+        (cx - width / 2, cy - height / 2),
+        width,
+        height,
+        angle=rotation,
+        rotation_point="center",
+    )
+    _fill(
+        ax, patch, materials, "grass", _jitter(rng, "#6f8f3f", 0.06), budget,
+        zorder=3, rotation=rotation, center=(cx, cy),
+    )
+    if rng.random() < 0.5:
+        draw_tree(ax, rng, budget, cx, cy, size * 0.55, materials=materials)
+    else:
+        draw_bush(ax, rng, budget, cx, cy, size * 0.5, materials=materials)
+    return _rotated_bbox(cx, cy, width, height, rotation)
+
+
 def draw_object(name, ax, rng, budget, cx, cy, size, **kwargs):
     """Dispatch to a point-object generator from :data:`OBJECTS`."""
     try:
@@ -1284,4 +1381,7 @@ OBJECTS = {
     "orchard": draw_orchard,
     "greenhouse": draw_greenhouse,
     "boat": draw_boat,
+    "crossing": draw_crossing,
+    "pavement": draw_pavement,
+    "planter": draw_planter,
 }

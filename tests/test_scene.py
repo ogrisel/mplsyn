@@ -72,6 +72,9 @@ def test_scene_labels_and_pixel_bbox():
         "plaza",
         "bush",
         "conifer",
+        "crossing",
+        "pavement",
+        "planter",
     }
     obj = scene.objects[0]
     x0, y0, x1, y1 = obj.pixel_bbox(100)

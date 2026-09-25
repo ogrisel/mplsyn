@@ -606,3 +606,26 @@ Requested: make scene classification harder with ambiguous scenes.
   **0.74** (was 1.00) with an off-diagonal confusion matrix (coastal<->urban,
   mountain<->arid, forest<->pasture/cropland); the ceiling (~0.75) is explained
   in the notebook as irreducible.
+
+## Round 38 — wadi colour, concrete/urban richness, more clouds
+
+Three requested changes:
+
+1. **Wadi closer to sand (arid)** — the apron now uses the sand base tone, the
+   braided gravel threads are drawn at 50 % alpha (blended toward the sand) and
+   the pebbles are sandy, so the dry bed no longer stands out as a grey ribbon.
+2. **Concrete + urban richness** — the `concrete` material no longer draws
+   large expansion-joint lines (they read as oversized cracks); it is now
+   textured only at the aggregate scale. Three new small objects -
+   `crossing` (zebra), `pavement` (tiled sidewalk apron) and `planter` (planted
+   bed) - are drawn into `urban`, together with more trees and a higher chance
+   of a second building per block, so blocks are no longer bare concrete.
+3. **Semi-transparent clouds, more often** — `clouds`/`cloud_alpha` gained an
+   `opacity` parameter (default **0.6**, previously capped at 0.9), so the ground
+   stays visible through the cloud. Cloud frequency rose to **~40 %** in the
+   segmentation/detection data (was 20 %) and to **48 %** in the diversity
+   notebook (was 28 %).
+
+**Result** (all notebooks re-run): classification 0.78/0.82; segmentation mIoU
+0.49; cloud IoU 0.72/0.76 (harder with translucent clouds); detection
+0.46/0.47; instance 0.57 IoU. 172 tests pass.

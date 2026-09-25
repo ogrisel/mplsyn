@@ -4,6 +4,26 @@ Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
 
+### 2026-09-24 15:30 — Round 38 (wadi colour, urban richness, more clouds)
+
+Three requested changes:
+
+1. **Wadi closer to sand** — `arid_scene` now uses the sand base tone for the
+   apron, draws the braided gravel threads at 50 % alpha (blended toward the
+   sand) and uses sandy pebbles, so the dry bed no longer reads as a grey road.
+2. **Concrete + urban richness** — `concrete` no longer draws large
+   expansion-joint lines (aggregate-scale texture only). Added `crossing`,
+   `pavement` and `planter` objects and placed them in `urban`, plus more trees
+   and second buildings, so blocks are busier (`object.py`, `scene.py`, test
+   label set updated).
+3. **Semi-transparent clouds, more often** — added `opacity` to
+   `cloud_alpha`/`clouds`/`apply_sensor` (default 0.6, was capped at 0.9); cloud
+   frequency 0.2 -> **0.4** in 06/08 and 28 % -> **48 %** in 04.
+
+All eight notebooks re-run. Metrics: 05 0.78/0.82, 06 mIoU 0.49, 07 IoU
+0.72/0.76, 08 detection 0.46/0.47, instance IoU 0.57. 172 tests pass; ruff
+clean; README/ROADMAP/VISUAL_QA updated.
+
 ### 2026-09-24 14:10 — Round 37 (harder scene classification)
 
 - Added three **transitional scenes**: `savanna` (arid ground, nearly

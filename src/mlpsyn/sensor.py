@@ -105,8 +105,13 @@ def haze(image: np.ndarray, rng, strength: float = 0.3) -> np.ndarray:
     return _to_uint8(blended)
 
 
-def cloud_alpha(shape, rng, coverage: float = 0.4) -> np.ndarray:
-    """Soft cloud-occlusion field (0 = clear, 1 = fully clouded) for ``shape``."""
+def cloud_alpha(shape, rng, coverage: float = 0.4, opacity: float = 0.6) -> np.ndarray:
+    """Soft cloud-occlusion field (0 = clear, 1 = fully clouded) for ``shape``.
+
+    ``opacity`` caps how white a cloud gets. The default keeps clouds
+    **semi-transparent** (the ground stays visible through them) rather than the
+    opaque white of the older setting.
+    """
     height, width = shape[:2]
     field = np.zeros((height, width))
     total = 0.0
@@ -122,7 +127,7 @@ def cloud_alpha(shape, rng, coverage: float = 0.4) -> np.ndarray:
     field = _box_blur(field, max(2, height // 90))
     low_p, high_p = np.percentile(field, [100 - 80 * coverage, 100 - 30 * coverage])
     alpha = np.clip((field - low_p) / (high_p - low_p + 1e-6), 0.0, 1.0)
-    return alpha**1.3 * 0.9
+    return alpha**1.3 * float(np.clip(opacity, 0.05, 1.0))
 
 
 def clouds(
@@ -130,6 +135,7 @@ def clouds(
     rng,
     coverage: float = 0.4,
     shadow: float = 0.2,
+    opacity: float = 0.6,
     return_mask: bool = False,
 ):
     """Soft cloud cover with an offset shadow on the ground.
@@ -138,7 +144,7 @@ def clouds(
     mask for cloud segmentation).
     """
     height = image.shape[0]
-    alpha = cloud_alpha(image.shape, rng, coverage)
+    alpha = cloud_alpha(image.shape, rng, coverage, opacity)
     shifted = np.roll(alpha, shift=max(2, int(0.05 * height)), axis=1)
     shifted = np.roll(shifted, shift=max(2, int(0.035 * height)), axis=0)
     out = _to_float(image) * (1.0 - shadow * shifted[..., None])
@@ -156,13 +162,14 @@ def atmosphere(
     haze_strength: float = 0.0,
     cloud_coverage: float = 0.0,
     shadow: float = 0.2,
+    cloud_opacity: float = 0.6,
 ) -> np.ndarray:
     """Atmospheric path: haze first (lower layer), then cloud occlusion."""
     out = image
     if haze_strength > 0:
         out = haze(out, rng, strength=haze_strength)
     if cloud_coverage > 0:
-        out = clouds(out, rng, coverage=cloud_coverage, shadow=shadow)
+        out = clouds(out, rng, coverage=cloud_coverage, shadow=shadow, opacity=cloud_opacity)
     return out
 
 
@@ -179,6 +186,7 @@ def apply_sensor(
     haze_strength: float = 0.0,
     cloud_coverage: float = 0.0,
     shadow: float = 0.2,
+    cloud_opacity: float = 0.6,
     sigma: float = GAUSSIAN_SIGMA,
     scale: float = POISSON_SCALE,
 ) -> np.ndarray:
@@ -194,7 +202,7 @@ def apply_sensor(
     magnitudes are bounded (see :data:`MAX_GAUSSIAN_SIGMA` and
     :data:`MIN_POISSON_SCALE`).
     """
-    out = atmosphere(image, rng, haze_strength, cloud_coverage, shadow)
+    out = atmosphere(image, rng, haze_strength, cloud_coverage, shadow, cloud_opacity)
     if blur_radius > 0:
         out = blur(out, rng, radius=blur_radius)
     if kind == "gaussian":
