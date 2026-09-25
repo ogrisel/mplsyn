@@ -3,6 +3,25 @@
 Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
+### 2026-09-24 19:10 — Round 42 (model-notebook top-5)
+
+Iteratively implemented the five highest-priority review items:
+
+1. **Read-out/title fixes** — 07's evaluation read-out moved below its figure;
+   06/07 protocol notes; missing read-outs for 06's colour legend and 08's
+   `colorize_instances`; 06/07/08 retitled (device is auto-selected).
+2. **05 seed-variance figure** — three seed accuracies with mean ± std
+   (0.685 ± 0.055) and a read-out.
+3. **Recipe tables** in 05-08 (model/params, input, loss, optimiser, epochs,
+   batch, augmentation, splits); 08 has detection and instance tables.
+4. **Detection error taxonomy (08)** — FP causes: localisation 524, background
+   252, duplicates 75, class confusion 2.
+5. **Resolution ablation (08)** — 64 px: 0.13/0.12 mAP vs 96 px: 0.41/0.39.
+
+Fixed a bug where the ablation's local `predictions` shadowed the global used by
+the metric cell (renamed and moved the ablation after the detection section).
+173 tests pass; ruff clean; 08 = 4.0 MB.
+
 ### 2026-09-24 17:40 — Round 41 (confusion matrices + class histograms)
 
 - **06 semantic segmentation**: added a **pixel-level confusion matrix**

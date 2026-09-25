@@ -720,3 +720,19 @@ read-out cites a stale number. Defects found:
 7. **P3 — segmentation rare-class strategy**: the class-weighted experiment
    exists; extend it with a short note/table of what more (dice loss, class
    sampling) would change.
+
+### Round 42 — results
+
+- **Read-out/title fixes**: 07's evaluation read-out moved below its figure; 06/07
+  gained protocol notes; 06/08 gained their missing read-outs; 06/07/08 retitled
+  to "PyTorch, automatic device".
+- **05 seed variance**: plotted the three seed accuracies with mean ± std
+  (0.685 ± 0.055) and a read-out.
+- **Recipe tables** added to 05-08 (model/params, input, loss, optimiser, epochs,
+  batch, augmentation, splits); 08 has detection and instance tables.
+- **Detection error taxonomy (08)**: false positives split by cause - on
+  validation **localisation 524, background 252, duplicates 75, class confusion
+  2** - so box tightness, not clutter, is the main error.
+- **Resolution ablation (08)**: same architecture at 64 px scores **0.13 val /
+  0.12 test** mAP@0.5 vs **0.41 / 0.39** at 96 px, demonstrating the resolution
+  ceiling.

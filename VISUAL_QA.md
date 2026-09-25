@@ -1295,3 +1295,11 @@ above its figure; 06/07 lack an evaluation-protocol note; one figure each in
 has no figure. Plan recorded in `ROADMAP.md` (Round 42): fix read-outs/titles,
 add a seed-variance figure, recipe boxes, a detection error taxonomy, a
 resolution ablation, and a cross-notebook learning path.
+
+## Round 42 — model-notebook improvements (results)
+
+The five planned items are done: read-out/title fixes, a 05 seed-variance figure,
+recipe tables in 05-08, a detection **error taxonomy** (localisation 524 >
+background 252 > duplicates 75 > class confusion 2) and a **resolution
+ablation** (96 px 0.41/0.39 vs 64 px 0.13/0.12 mAP@0.5). All new figures have a
+read-out below them; 08 is 4.0 MB.
