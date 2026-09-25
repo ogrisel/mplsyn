@@ -1265,3 +1265,10 @@ the notebook. 169 tests pass.
 - Trade-off: the muted vegetation tones reduce grass/crop/foliage separability,
   so segmentation mIoU falls to 0.41; this is documented as the cost of the more
   realistic palette.
+
+## Round 40 — cloud opacity mix
+
+Cloudy scenes now show a mix: most clouds have a solid white core and about a
+quarter are semi-transparent veils (verified on an 8-scene sample; ~72/28 over
+400 draws). Segmentation mIoU rose to 0.50 and cloud-IoU to 0.84, while detection
+mAP fell to 0.41/0.39 - opaque clouds hide small objects, an honest ceiling.

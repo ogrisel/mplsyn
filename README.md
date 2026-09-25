@@ -68,9 +68,9 @@ close, so the models are not tuned to validation).
 | notebook | task (64 px unless noted) | metric | validation | test |
 |---|---|---|---|---|
 | 05 | scene classification (7 classes, 50 % ambiguous mixtures) | accuracy | 0.80 | 0.71 |
-| 06 | semantic segmentation (12 classes) | pixel acc / mIoU | 0.69 / 0.41 | 0.66 / 0.37 |
-| 07 | cloud occlusion | IoU / Dice | 0.82 / 0.90 | 0.85 / 0.92 |
-| 08 | object detection @96 px (6 classes) | mAP@0.5 | 0.52 | 0.50 |
+| 06 | semantic segmentation (12 classes) | pixel acc / mIoU | 0.79 / 0.50 | 0.80 / 0.51 |
+| 07 | cloud occlusion | IoU / Dice | 0.84 / 0.91 | 0.85 / 0.92 |
+| 08 | object detection @96 px (6 classes) | mAP@0.5 | 0.41 | 0.39 |
 | 08 | tree instance masks (per-anchor head) | instance IoU / count MAE (MAPE) | 0.56 / 3.1 (19 %) | 0.56 / 3.1 (22 %) |
 
 All tasks run on **light sensor noise with ~20 % partial cloud cover**, so the

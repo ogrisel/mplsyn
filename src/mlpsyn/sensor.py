@@ -105,14 +105,27 @@ def haze(image: np.ndarray, rng, strength: float = 0.3) -> np.ndarray:
     return _to_uint8(blended)
 
 
-def cloud_alpha(shape, rng, coverage: float = 0.4, opacity: float = 0.6) -> np.ndarray:
+def _sample_opacity(rng) -> float:
+    """Per-scene cloud opacity.
+
+    75 % of cloudy scenes get an **opaque core** (opacity ~1); the remaining
+    25 % stay **semi-transparent**, so the ground shows through.
+    """
+    if rng.random() < 0.75:
+        return float(rng.uniform(0.95, 1.0))
+    return float(rng.uniform(0.45, 0.6))
+
+
+def cloud_alpha(shape, rng, coverage: float = 0.4, opacity: float | None = None) -> np.ndarray:
     """Soft cloud-occlusion field (0 = clear, 1 = fully clouded) for ``shape``.
 
-    ``opacity`` caps how white a cloud gets. The default keeps clouds
-    **semi-transparent** (the ground stays visible through them) rather than the
-    opaque white of the older setting.
+    ``opacity`` caps how white a cloud gets. When it is ``None`` (the default) a
+    per-scene value is drawn: most scenes keep a fully opaque core, a quarter are
+    left semi-transparent (see :func:`_sample_opacity`).
     """
     height, width = shape[:2]
+    if opacity is None:
+        opacity = _sample_opacity(rng)
     field = np.zeros((height, width))
     total = 0.0
     for cells, weight in [(4, 1.0), (8, 0.6), (16, 0.35), (32, 0.2)]:
@@ -135,7 +148,7 @@ def clouds(
     rng,
     coverage: float = 0.4,
     shadow: float = 0.2,
-    opacity: float = 0.6,
+    opacity: float | None = None,
     return_mask: bool = False,
 ):
     """Soft cloud cover with an offset shadow on the ground.
@@ -162,7 +175,7 @@ def atmosphere(
     haze_strength: float = 0.0,
     cloud_coverage: float = 0.0,
     shadow: float = 0.2,
-    cloud_opacity: float = 0.6,
+    cloud_opacity: float | None = None,
 ) -> np.ndarray:
     """Atmospheric path: haze first (lower layer), then cloud occlusion."""
     out = image
@@ -186,7 +199,7 @@ def apply_sensor(
     haze_strength: float = 0.0,
     cloud_coverage: float = 0.0,
     shadow: float = 0.2,
-    cloud_opacity: float = 0.6,
+    cloud_opacity: float | None = None,
     sigma: float = GAUSSIAN_SIGMA,
     scale: float = POISSON_SCALE,
 ) -> np.ndarray:

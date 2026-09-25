@@ -3,6 +3,16 @@
 Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
+### 2026-09-24 17:20 — Round 40 (opaque cloud cores, ~25% partial)
+
+- `cloud_alpha`/`clouds`/`apply_sensor` gained `opacity=None`; `_sample_opacity`
+  draws an **opaque core for 75 %** of cloudy scenes (0.95-1.0) and a
+  **semi-transparent veil for 25 %** (0.45-0.6). Measured ~72/28 over 400 draws.
+- Removed the forced `cloud_opacity=0.55` from 06/08 so the mix applies.
+- Re-ran 03/04/06/07/08: segmentation mIoU 0.50, cloud IoU 0.84/0.85, detection
+  0.41/0.39 (opaque clouds hide small objects), instance unchanged.
+- Updated the cloud wording in 03/04/06/07/08 and the README table. 173 tests
+  pass; ruff clean.
 
 ### 2026-09-24 16:40 — Round 39 (vehicles, muted materials, semi-arid, notebook QA)
 

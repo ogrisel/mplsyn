@@ -653,3 +653,19 @@ Requested batch:
 **Result** (all notebooks re-run): 05 0.80/0.71; 06 mIoU 0.41 (muted tones lower
 class separability); 07 IoU 0.82/0.85; 08 detection mAP 0.52/0.50, instance IoU
 0.56. 173 tests pass.
+
+## Round 40 — cloud opacity: opaque cores with a quarter semi-transparent
+
+Requested: raise the median cloud opacity so most clouds have a **fully opaque
+core**, while keeping ~25 % of cloudy scenes partially transparent.
+
+- `cloud_alpha`/`clouds`/`atmosphere`/`apply_sensor` now take `opacity=None`; a
+  per-scene value is sampled by `_sample_opacity`: **75 %** draw an opaque core
+  (0.95-1.0), **25 %** stay semi-transparent (0.45-0.6). Measured over 400
+  samples: ~72 % opaque-core, ~28 % partial.
+- Notebooks 06/08 no longer force `cloud_opacity=0.55`, so the sensor samples
+  the mix.
+
+**Result** (03/04/06/07/08 re-run): 06 mIoU 0.50, 07 IoU 0.84/0.85, **detection
+drops to 0.41/0.39** because opaque clouds hide the small objects entirely
+(instance/forest unchanged, no clouds there).
