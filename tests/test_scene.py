@@ -33,6 +33,9 @@ def test_scene_registry():
         "forest_fields",
         "urban_fringe",
         "coastal_city",
+        "savanna",
+        "woodland_pasture",
+        "scrubland",
     }
 
 
@@ -199,4 +202,17 @@ def test_coastal_city_has_harbour_elements():
     # Breakwaters, piers and marinas must all be reachable across seeds.
     assert {"breakwater", "pier", "marina"} <= labels
     assert "boat" in labels
+
+
+def test_ambiguous_scenes_mix_the_right_cues():
+    # Savanna: dry ground but heavy tree/scrub cover (arid vs forest).
+    savanna = set(generate_scene("savanna", size=240, seed=1).labels())
+    assert savanna & {"tree", "conifer", "bush"}
+    # Wooded pasture: green meadow with extensive tree clumps (pasture vs forest).
+    wooded = set(generate_scene("woodland_pasture", size=240, seed=1).labels())
+    assert wooded & {"tree", "conifer", "bush"}
+    # Scrubland: rocky and dry, but no trees (arid vs mountain).
+    scrub = set(generate_scene("scrubland", size=240, seed=1).labels())
+    assert "rock" in scrub
+    assert not (scrub & {"tree", "conifer"})
 

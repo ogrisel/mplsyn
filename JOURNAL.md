@@ -4,6 +4,21 @@ Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
 
+### 2026-09-24 14:10 — Round 37 (harder scene classification)
+
+- Added three **transitional scenes**: `savanna` (arid ground, nearly
+  forest-dense trees), `woodland_pasture` (meadow half woodland), `scrubland`
+  (rocky dry, no trees). Registered in `SCENES`, rendered in 03, sampled in 04,
+  mapped into the classification palette.
+- Made the 05 dataset **half mixtures**: half the images blend two scene
+  types with a soft boundary at a near-equal share; the rival comes from a
+  hand-picked **confusable** set, and light blur/noise removes texture shortcuts.
+- Near-balanced mixtures are **label-ambiguous** (target with prob 0.65, rival
+  otherwise), so the task has an irreducible ceiling.
+- Result: validation accuracy **0.74** (was 1.00) with a clearly off-diagonal
+  confusion matrix (coastal->urban, mountain->arid, forest/pasture/cropland).
+  Explained in-notebook; README/ROADMAP/VISUAL_QA updated; 169 tests pass.
+
 ### 2026-09-24 12:40 — Round 36 (validation loss and less noisy curves)
 
 - **Validation loss** is now plotted alongside the validation metric in every

@@ -67,7 +67,7 @@ close, so the models are not tuned to validation).
 
 | notebook | task (64 px unless noted) | metric | validation | test |
 |---|---|---|---|---|
-| 05 | scene classification (7 classes) | accuracy | 1.00 | 1.00 |
+| 05 | scene classification (7 classes, 50 % ambiguous mixtures) | accuracy | 0.74 | 0.83 |
 | 06 | semantic segmentation (12 classes) | pixel acc / mIoU | 0.78 / 0.54 | 0.78 / 0.53 |
 | 07 | cloud occlusion | IoU / Dice | 0.92 / 0.96 | 0.92 / 0.96 |
 | 08 | object detection @96 px (6 classes) | mAP@0.5 | 0.46 | 0.50 |

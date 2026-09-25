@@ -1228,3 +1228,13 @@ under 5 MB.
 | 08 | detection + instance validation loss; N 360->480 / 320->400; epochs 150->100 / 100->70 | mAP monotonic, train/val losses track; test mAP 0.50, test IoU 0.57 |
 
 Runtimes stayed close (05-08: 54/87/44/188 s vs ~38/83/39/190 s).
+
+## Round 37 — harder scene classification
+
+The classification confusion matrix is now clearly **off-diagonal**: validation
+accuracy fell to **0.74** (was 1.00), with per-class accuracy 0.56 (coastal) to
+0.88 (forest). The dominant confusions are exactly the intended ambiguous pairs:
+`coastal` -> `urban`, `mountain` -> `arid`, and `forest`/`pasture`/`cropland`
+blurring. Three transitional scene types (`savanna`, `woodland_pasture`,
+`scrubland`) were added and inspected in 03; the mixture ceiling is documented in
+the notebook. 169 tests pass.

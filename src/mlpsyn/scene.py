@@ -49,6 +49,9 @@ __all__ = [
     "forest_fields_scene",
     "mountain_scene",
     "pasture_scene",
+    "savanna_scene",
+    "scrubland_scene",
+    "woodland_pasture_scene",
     "forest_scene",
     "generate_scene",
     "urban_fringe_scene",
@@ -1529,6 +1532,144 @@ def arid_scene(size: int = 600, seed: int | None = None) -> Scene:
     )
 
 
+def savanna_scene(size: int = 600, seed: int | None = None) -> Scene:
+    """Dry savanna: open sandy/soil ground with many scattered trees and scrub.
+
+    A deliberately **ambiguous** scene: the tree cover is high enough to look
+    forest-like, while the dry, open ground still reads as arid. It sits between
+    ``arid`` and ``forest``.
+    """
+
+    def drawer(ax, rng, budget, materials):
+        objects = []
+        terrain = _terrain(rng)
+        _relief_overlay(ax, budget, terrain, zorder=1.5, alpha=0.3)
+        _ground_patches(
+            ax, rng, budget, materials, ["sand", "soil", "grass", "sand"],
+            int(rng.integers(5, 10)), size_range=(0.16, 0.36),
+        )
+        # Scattered trees and bushes: denser than `arid`, sparser than `forest`.
+        n = int(np.clip(size * size / 3400, 20, 80))
+        objects.extend(_place_vegetation(ax, rng, budget, materials, n, (0.035, 0.07), 0.06))
+        objects.extend(
+            _place_vegetation(ax, rng, budget, materials, n // 3, (0.02, 0.045), 0.04)
+        )
+        for _ in range(int(rng.integers(3, 8))):
+            if budget.full:
+                break
+            bbox = OBJECTS["rock"](
+                ax, rng, budget, rng.uniform(0.05, 0.95), rng.uniform(0.05, 0.95),
+                rng.uniform(0.03, 0.07), materials=materials,
+            )
+            objects.append(SceneObject("rock", bbox))
+        if rng.random() < 0.6:
+            path = _gentle_path(rng, terrain[1], n=18, meander=0.14)
+            draw_road(
+                ax, rng, budget, points=path, width=0.014, materials=materials,
+                material_key="gravel", color="#b7a06a", meander=0.0, dashes=False,
+                shoulder=False,
+            )
+        return objects
+
+    return _compose(
+        "savanna", size, seed, "sand", drawer,
+        ["sand", "soil", "grass", "foliage", "bark", "rock", "gravel"],
+    )
+
+
+def woodland_pasture_scene(size: int = 600, seed: int | None = None) -> Scene:
+    """Wooded pasture: meadow with extensive tree clumps and hedgerows.
+
+    Green throughout like ``pasture``, but with enough tree cover to be
+    confused with ``forest``: another deliberately ambiguous scene.
+    """
+
+    def drawer(ax, rng, budget, materials):
+        objects = []
+        terrain = _terrain(rng)
+        _relief_overlay(ax, budget, terrain, zorder=1.5, alpha=0.3)
+        _ground_patches(
+            ax, rng, budget, materials, ["grass", "grass", "soil"],
+            int(rng.integers(6, 11)), size_range=(0.2, 0.42),
+        )
+        # Extensive woodland clumps across the frame (pasture/forest midpoint).
+        for _ in range(int(rng.integers(11, 18))):
+            if budget.full:
+                break
+            _forest_patch(
+                ax, rng, budget, materials, objects,
+                rng.uniform(0.08, 0.92), rng.uniform(0.08, 0.92), rng.uniform(0.1, 0.22),
+            )
+        for _ in range(int(rng.integers(4, 8))):
+            p0 = rng.uniform(0.05, 0.95, size=2)
+            angle = rng.uniform(0.0, np.pi)
+            length = rng.uniform(0.2, 0.45)
+            p1 = np.clip(p0 + length * np.array([np.cos(angle), np.sin(angle)]), 0.03, 0.97)
+            _hedge_edge(ax, rng, budget, materials, p0, p1, objects)
+        for _ in range(int(rng.integers(6, 12))):
+            if budget.full:
+                break
+            label, palette = _pick_plant(rng, conifer_bias=0.35, bush_prob=0.15)
+            bbox = OBJECTS[label](
+                ax, rng, budget, rng.uniform(0.05, 0.95), rng.uniform(0.05, 0.95),
+                rng.uniform(0.03, 0.06), palette=palette, materials=materials,
+            )
+            objects.append(SceneObject(label, bbox))
+        if rng.random() < 0.5:
+            path = _gentle_path(rng, terrain[1], n=18, meander=0.12)
+            draw_road(
+                ax, rng, budget, points=path, width=0.016, materials=materials,
+                material_key="gravel", color="#b7a06a", meander=0.0, dashes=False,
+                shoulder=False,
+            )
+        return objects
+
+    return _compose(
+        "woodland_pasture", size, seed, "grass", drawer,
+        ["grass", "soil", "foliage", "bark", "water", "gravel"],
+    )
+
+
+def scrubland_scene(size: int = 600, seed: int | None = None) -> Scene:
+    """Dry rocky scrubland: rock and sand ground with sparse scrub and boulders.
+
+    A rocky, dry scene between ``arid`` and ``mountain`` (no snow, no trees).
+    """
+
+    def drawer(ax, rng, budget, materials):
+        objects = []
+        terrain = _terrain(rng)
+        _relief_overlay(ax, budget, terrain, zorder=1.5, alpha=0.4)
+        _ground_patches(
+            ax, rng, budget, materials, ["sand", "gravel", "soil", "sand"],
+            int(rng.integers(7, 13)), size_range=(0.18, 0.4),
+        )
+        for _ in range(int(rng.integers(10, 18))):
+            if budget.full:
+                break
+            bbox = OBJECTS["rock"](
+                ax, rng, budget, rng.uniform(0.04, 0.96), rng.uniform(0.04, 0.96),
+                rng.uniform(0.04, 0.1), materials=materials,
+            )
+            objects.append(SceneObject("rock", bbox))
+        for _ in range(int(rng.integers(8, 15))):
+            if budget.full:
+                break
+            bbox = OBJECTS["bush"](
+                ax, rng, budget, rng.uniform(0.04, 0.96), rng.uniform(0.04, 0.96),
+                rng.uniform(0.025, 0.055),
+                palette=str(rng.choice(["#6f8f45", "#7a8a4a", "#8a9a5a"])),
+                materials=materials,
+            )
+            objects.append(SceneObject("bush", bbox))
+        return objects
+
+    return _compose(
+        "scrubland", size, seed, "sand", drawer,
+        ["sand", "gravel", "rock", "soil", "foliage"],
+    )
+
+
 def forest_fields_scene(size: int = 600, seed: int | None = None) -> Scene:
     """Boundary scene: woodland on one side, agricultural plots on the other."""
 
@@ -1879,6 +2020,9 @@ SCENES = {
     "forest_fields": forest_fields_scene,
     "urban_fringe": urban_fringe_scene,
     "coastal_city": coastal_city_scene,
+    "savanna": savanna_scene,
+    "woodland_pasture": woodland_pasture_scene,
+    "scrubland": scrubland_scene,
 }
 
 

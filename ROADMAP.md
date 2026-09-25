@@ -585,3 +585,24 @@ runtimes do not grow much.
   190 s); validation curves are much smoother (06 mIoU monotonic; detection
   mAP monotonic and train/val losses track). Test detection mAP rose to 0.50 and
   instance test IoU to 0.57.
+
+## Round 37 — harder scene classification (ambiguous scenes)
+
+Requested: make scene classification harder with ambiguous scenes.
+
+- **New transitional scene types** in `mlpsyn.scene`: `savanna` (arid ground,
+  nearly forest-dense trees), `woodland_pasture` (meadow gone half-woodland),
+  `scrubland` (rocky and dry, no trees). Registered in `SCENES`, rendered in 03,
+  sampled in 04, and used in the classification palette (savanna/scrubland ->
+  arid, woodland_pasture -> pasture, plus `coastal_city` -> coastal).
+- **Mixture dataset (05)**: half the images blend two scene types with a soft
+  wavy boundary at a near-equal share. The rival class is drawn from a
+  hand-picked **confusable** set, and light blur/noise removes fine-texture
+  shortcuts.
+- **Irreducible ambiguity**: a near-balanced mixture has no single correct label,
+  so it is assigned to the target scene with probability 0.65 and to the rival
+  otherwise, independent of area.
+- **Result**: classification is no longer trivial - validation accuracy
+  **0.74** (was 1.00) with an off-diagonal confusion matrix (coastal<->urban,
+  mountain<->arid, forest<->pasture/cropland); the ceiling (~0.75) is explained
+  in the notebook as irreducible.
