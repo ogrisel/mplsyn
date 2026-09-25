@@ -1217,3 +1217,14 @@ mosaic.
 
 Both new 08 figures render cleanly and are described in the notebook; sizes stay
 under 5 MB.
+
+## Round 36 — validation loss and smoother curves
+
+| Notebook | Change | Result |
+|---|---|---|
+| 05 | train+validation loss curve; lr 2e-3 -> 1e-3; N_PER_CLASS 46->72 | seed variance 0.95 ± 0.07 (was 0.84 ± 0.11); curves smooth |
+| 06 | train+validation loss; N_SAMPLES 240->360, val 48->80, test 40->60; epochs 30->16 | mIoU rises monotonically (no more dips) |
+| 07 | train+validation loss; N 240->360, val 48->80, test 40->60; epochs 20->12 | loss and IoU track smoothly |
+| 08 | detection + instance validation loss; N 360->480 / 320->400; epochs 150->100 / 100->70 | mAP monotonic, train/val losses track; test mAP 0.50, test IoU 0.57 |
+
+Runtimes stayed close (05-08: 54/87/44/188 s vs ~38/83/39/190 s).

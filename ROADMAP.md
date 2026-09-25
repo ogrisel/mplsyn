@@ -566,3 +566,22 @@ figure/box described in the notebook.
 - **Clar-3 key terms:** a compact glossary cell added to 05, 06, 07 and 08.
 - **Clar-4 self-checks:** a "what to expect" note appended to every exercise set
   (05-08) so learners can verify their experiments.
+
+## Round 36 — validation loss and less noisy curves
+
+Requested: plot validation loss alongside the validation metrics, enlarge the
+training/validation/test sets to reduce metric oscillation, and adjust epochs so
+runtimes do not grow much.
+
+- **Validation loss** added to every training curve: 05/06/07 (single loss panel
+  + metric panel) and 08 (detection and instance models, loss panels on val).
+- **Larger splits**: 05 N_PER_CLASS 46->72 / val 10->16 / test 8->12; 06 and 07
+  N_SAMPLES 240->360, val 48->80, test 40->60; 08 detection 360->480 (val
+  64->80, test 48->64) and forest 320->400 (val 40->56, test 32->44).
+- **Epochs reduced** to compensate: 05 40->30 (and lr 2e-3 -> 1e-3, which also
+  removed a BatchNorm transient), 06 30->16, 07 20->12, 08 detection 150->100,
+  forest 100->70.
+- **Result**: 05-08 total runtimes 54 / 87 / 44 / 188 s (was ~38 / 83 / 39 /
+  190 s); validation curves are much smoother (06 mIoU monotonic; detection
+  mAP monotonic and train/val losses track). Test detection mAP rose to 0.50 and
+  instance test IoU to 0.57.

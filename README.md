@@ -67,11 +67,11 @@ close, so the models are not tuned to validation).
 
 | notebook | task (64 px unless noted) | metric | validation | test |
 |---|---|---|---|---|
-| 05 | scene classification (7 classes) | accuracy | 0.97 | 1.00 |
-| 06 | semantic segmentation (12 classes) | pixel acc / mIoU | 0.82 / 0.58 | 0.83 / 0.58 |
-| 07 | cloud occlusion | IoU / Dice | 0.93 / 0.96 | 0.93 / 0.96 |
-| 08 | object detection @96 px (6 classes) | mAP@0.5 | 0.47 | 0.45 |
-| 08 | tree instance masks (per-anchor head) | instance IoU / count MAE (MAPE) | 0.58 / 3.0 (22 %) | 0.53 / 3.8 (21 %) |
+| 05 | scene classification (7 classes) | accuracy | 1.00 | 1.00 |
+| 06 | semantic segmentation (12 classes) | pixel acc / mIoU | 0.78 / 0.54 | 0.78 / 0.53 |
+| 07 | cloud occlusion | IoU / Dice | 0.92 / 0.96 | 0.92 / 0.96 |
+| 08 | object detection @96 px (6 classes) | mAP@0.5 | 0.46 | 0.50 |
+| 08 | tree instance masks (per-anchor head) | instance IoU / count MAE (MAPE) | 0.57 / 4.3 (27 %) | 0.57 / 4.6 (32 %) |
 
 All tasks run on **light sensor noise with ~20 % partial cloud cover**, so the
 scores are deliberately below a clean-data benchmark. That is the lesson, spelled

@@ -4,6 +4,23 @@ Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
 
+### 2026-09-24 12:40 — Round 36 (validation loss and less noisy curves)
+
+- **Validation loss** is now plotted alongside the validation metric in every
+  model notebook: 05/06/07 (loss panel + metric panel) and 08 for both the
+  detection and the instance model.
+- **Larger splits** to reduce oscillation: 05 N_PER_CLASS 46->72, val 10->16,
+  test 8->12; 06/07 N_SAMPLES 240->360, val 48->80, test 40->60; 08 detection
+  360->480 (val 64->80, test 48->64) and forest 320->400 (val 40->56, 32->44).
+- **Epochs reduced** to keep runtimes flat: 05 40->30, 06 30->16, 07 20->12,
+  08 detection 150->100, forest 100->70. Also dropped 05's learning rate
+  2e-3 -> 1e-3, which removed a BatchNorm transient (val loss once spiked to
+  10.4; now a single mild bump).
+- **Outcome**: runtimes 54 / 87 / 44 / 188 s (was ~38 / 83 / 39 / 190 s);
+  validation curves are smooth and monotone-ish; detection test mAP 0.50,
+  instance test IoU 0.57; 05 seed variance 0.95 ± 0.07 (was 0.84 ± 0.11).
+- Docs (README table, ROADMAP, VISUAL_QA) refreshed; 162 tests pass; ruff clean.
+
 ### 2026-09-24 11:50 — Round 35 (clarity of the model notebooks)
 
 Four clarity-focused changes to the model notebooks:
