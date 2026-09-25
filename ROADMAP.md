@@ -669,3 +669,12 @@ core**, while keeping ~25 % of cloudy scenes partially transparent.
 **Result** (03/04/06/07/08 re-run): 06 mIoU 0.50, 07 IoU 0.84/0.85, **detection
 drops to 0.41/0.39** because opaque clouds hide the small objects entirely
 (instance/forest unchanged, no clouds there).
+
+## Round 41 — confusion matrices and class histograms
+
+- **Segmentation (06)**: pixel-level confusion matrix (row-normalised) + log
+  class histogram, exposing systematic confusions the scalar mIoU hides.
+- **Classification (05)**: class-count histogram (true vs predicted) beside the
+  confusion matrix.
+- **Detection (08)**: per-class ground-truth histogram beside the score-threshold
+  sweep, to read AP asymmetries against data frequency.

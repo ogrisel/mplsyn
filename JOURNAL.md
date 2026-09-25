@@ -3,6 +3,20 @@
 Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
+### 2026-09-24 17:40 — Round 41 (confusion matrices + class histograms)
+
+- **06 semantic segmentation**: added a **pixel-level confusion matrix**
+  (validation, row-normalised, class 0 excluded) beside a log-scale **class
+  histogram**. It makes systematic confusions explicit (`rock` -> `gravel`,
+  `road` <-> `built`, `wetland` <-> `water`) instead of leaving them buried in
+  mIoU.
+- **05 classification**: the confusion-matrix figure gained a **class-count**
+  panel (true vs predicted).
+- **08 detection**: the metric-behaviour figure gained a **per-class
+  ground-truth histogram**, to interpret AP asymmetries against data frequency.
+- Re-ran 05/06/08; new figures described below the figure. 173 tests pass;
+  ruff clean.
+
 ### 2026-09-24 17:20 — Round 40 (opaque cloud cores, ~25% partial)
 
 - `cloud_alpha`/`clouds`/`apply_sensor` gained `opacity=None`; `_sample_opacity`

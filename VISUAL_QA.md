@@ -1272,3 +1272,15 @@ Cloudy scenes now show a mix: most clouds have a solid white core and about a
 quarter are semi-transparent veils (verified on an 8-scene sample; ~72/28 over
 400 draws). Segmentation mIoU rose to 0.50 and cloud-IoU to 0.84, while detection
 mAP fell to 0.41/0.39 - opaque clouds hide small objects, an honest ceiling.
+
+## Round 41 — confusion matrices and class histograms
+
+- **06 semantic segmentation**: added a **pixel-level confusion matrix** (rows
+  true, columns predicted, row-normalised, class 0 excluded) beside a log-scale
+  **class histogram**. The matrix exposes systematic confusions hidden by mIoU:
+  `rock` -> `gravel`, `road` <-> `built`, `wetland` <-> `water`.
+- **05 classification**: the confusion-matrix figure gained a **class-count**
+  panel (true vs predicted) so column asymmetries can be read directly.
+- **08 detection**: the metric-behaviour figure gained a **per-class
+  ground-truth histogram**, so AP asymmetries can be told apart from data
+  scarcity / small object size.
