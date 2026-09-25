@@ -4,6 +4,26 @@ Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
 
+### 2026-09-24 16:40 — Round 39 (vehicles, muted materials, semi-arid, notebook QA)
+
+Requested batch:
+
+- **Vehicles**: added a dedicated `_VEHICLE_COLORS` palette (neutrals + a few
+  saturated colours) for cars/trucks and a new `bus` object placed in urban
+  scenes; detection maps `bus -> car`.
+- **Materials**: `sand`/`grass`/`foliage`/`crop` pick a per-seed muted base tone
+  from small palettes, for more diversity and less saturation.
+- **Arid diversity**: a per-scene `vegetation_level` moves arid scenes from bare
+  desert to semi-arid (grass, many bushes, scattered trees). Fixed a bug where a
+  missing `"grass"` material made `_ground_patches` draw the default blue colour.
+- **Notebooks**: `pick_device()` selects cuda -> mps -> xpu -> cpu; added a
+  "Why BCE for a multi-class head?" explanation; legends on every bounding-box
+  figure; per-figure read-outs below each figure (removed end-of-notebook
+  duplicates).
+- Re-run all notebooks. Metrics: 05 0.80/0.71, 06 mIoU 0.41 (muted tones lower
+  separability), 07 IoU 0.82/0.85, 08 detection 0.52/0.50, instance IoU 0.56.
+  173 tests pass; ruff clean.
+
 ### 2026-09-24 15:30 — Round 38 (wadi colour, urban richness, more clouds)
 
 Three requested changes:

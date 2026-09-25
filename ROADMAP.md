@@ -629,3 +629,27 @@ Three requested changes:
 **Result** (all notebooks re-run): classification 0.78/0.82; segmentation mIoU
 0.49; cloud IoU 0.72/0.76 (harder with translucent clouds); detection
 0.46/0.47; instance 0.57 IoU. 172 tests pass.
+
+## Round 39 — vehicles, muted materials, semi-arid diversity, notebook quality
+
+Requested batch:
+
+- **Vehicles**: separate `_VEHICLE_COLORS` palette (neutrals + a few saturated
+  colours) for cars and trucks, plus a new `bus` object placed in urban scenes;
+  detection maps `bus -> car`.
+- **Materials**: `sand`, `grass`, `foliage` and `crop` now pick a **per-seed,
+  muted base tone** from small palettes, so backgrounds vary across seeds and are
+  less saturated.
+- **Arid diversity**: a per-scene `vegetation_level` drives arid scenes from bare
+  desert to **semi-arid** (grass patches, many more bushes, scattered trees).
+  Fixed a bug where a missing `"grass"` material made `_ground_patches` draw
+  matplotlib's default **blue** polygon.
+- **Notebooks**: `pick_device()` now selects cuda -> mps -> xpu -> cpu; a
+  "Why BCE for a multi-class head?" section explains binary cross-entropy applied
+  per class (vs softmax CE); every bounding-box figure carries a **colour legend**;
+  a short **figure read-out is placed directly below each figure** (the end-of-
+  notebook duplicates were removed).
+
+**Result** (all notebooks re-run): 05 0.80/0.71; 06 mIoU 0.41 (muted tones lower
+class separability); 07 IoU 0.82/0.85; 08 detection mAP 0.52/0.50, instance IoU
+0.56. 173 tests pass.

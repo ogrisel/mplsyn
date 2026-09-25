@@ -1250,3 +1250,18 @@ the notebook. 169 tests pass.
   frequent (~40 % in 06/08, 48 % in 04); the ground stays visible through them.
 - Metrics after the changes: 05 0.78/0.82, 06 mIoU 0.49, 07 IoU 0.72/0.76,
   08 det 0.46/0.47, instance IoU 0.57.
+
+## Round 39 — vehicles, muted materials, semi-arid, notebook QA
+
+- **Vehicles** now use a dedicated palette: mostly white/silver/grey/black with a
+  few saturated colours, and a new **bus** (urban renders inspected - clearly
+  varied). Bus maps to the `car` detection class.
+- **Materials** are muted and per-seed varied (sand/grass/foliage/crop palettes);
+  arid scenes range from bare to **semi-arid** (inspected across seeds). A
+  default-blue polygon bug in `_ground_patches` was fixed.
+- **Notebooks**: device auto-selection (cuda/mps/xpu/cpu), a BCE-vs-softmax
+  explanation, legends on all bounding-box figures, and a **read-out below each
+  figure**.
+- Trade-off: the muted vegetation tones reduce grass/crop/foliage separability,
+  so segmentation mIoU falls to 0.41; this is documented as the cost of the more
+  realistic palette.

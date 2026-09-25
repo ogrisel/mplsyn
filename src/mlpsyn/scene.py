@@ -420,6 +420,9 @@ def _ground_patches(ax, rng, budget, materials, keys, n, size_range=(0.14, 0.34)
                 power = 1.0 if mask_mode() else 0.18
                 fill_patch(ax, patch, materials[key], budget=budget, zorder=zorder, alpha=power)
             else:
+                # Neutral fallback so a missing material never draws the default
+                # (blue) matplotlib colour.
+                patch.set_facecolor((0.5, 0.5, 0.5))
                 budget.add_patch(ax, patch)
 
 
@@ -1217,7 +1220,14 @@ def urban_scene(size: int = 600, seed: int | None = None) -> Scene:
             """Place a car (or a truck) at a road point and record its box."""
             if not (0.03 <= px <= 0.97 and 0.03 <= py <= 0.97):
                 return  # keep vehicles fully inside the frame
-            if rng.random() < 0.22:
+            roll = rng.random()
+            if roll < 0.08:
+                bbox = OBJECTS["bus"](
+                    ax, rng, budget, float(px), float(py), rng.uniform(0.07, 0.09),
+                    materials=materials, rotation=rotation_deg + float(rng.uniform(-6.0, 6.0)),
+                )
+                objects.append(SceneObject("bus", bbox))
+            elif roll < 0.28:
                 bbox = OBJECTS["truck"](
                     ax, rng, budget, float(px), float(py), rng.uniform(0.05, 0.065),
                     materials=materials, rotation=rotation_deg + float(rng.uniform(-8.0, 8.0)),
@@ -1462,9 +1472,15 @@ def arid_scene(size: int = 600, seed: int | None = None) -> Scene:
 
     def drawer(ax, rng, budget, materials):
         objects = []
+        # Per-scene aridity: 0 = bare desert, 1 = semi-arid with grass and trees.
+        vegetation_level = rng.random()
+        if vegetation_level > 0.45:
+            ground_materials = ["gravel", "sand", "sand", "grass"]
+        else:
+            ground_materials = ["gravel", "sand", "sand"]
         _ground_patches(
-            ax, rng, budget, materials, ["gravel", "sand", "sand"],
-            int(rng.integers(2, 5)), size_range=(0.12, 0.26),
+            ax, rng, budget, materials, ground_materials,
+            int(rng.integers(2, 5 + int(8 * vegetation_level))), size_range=(0.12, 0.26),
         )
         if rng.random() < 0.85:   # a dry wadi in most scenes
             if rng.random() < 0.5:
@@ -1542,7 +1558,7 @@ def arid_scene(size: int = 600, seed: int | None = None) -> Scene:
                 materials=materials,
             )
             objects.append(SceneObject("rock", bbox))
-        for _ in range(int(rng.integers(6, 12))):
+        for _ in range(int(rng.integers(3, 6 + int(vegetation_level * 22)))):
             if budget.full:
                 break
             bbox = OBJECTS["bush"](
@@ -1552,14 +1568,26 @@ def arid_scene(size: int = 600, seed: int | None = None) -> Scene:
                 rng.uniform(0.05, 0.95),
                 rng.uniform(0.05, 0.95),
                 rng.uniform(0.03, 0.06),
-                palette=str(rng.choice(["#6f8f45", "#7a8a4a", "#8a9a5a"])),
+                palette=str(rng.choice(["#6f8f45", "#7a8a4a", "#8a9a5a", "#8a9466"])),
                 materials=materials,
             )
             objects.append(SceneObject("bush", bbox))
+        # Semi-arid seeds also grow scattered trees and scrub.
+        if vegetation_level > 0.5:
+            for _ in range(int(rng.integers(1, 2 + int(vegetation_level * 7)))):
+                if budget.full:
+                    break
+                label, palette = _pick_plant(rng, conifer_bias=0.1, bush_prob=0.2)
+                bbox = OBJECTS[label](
+                    ax, rng, budget, rng.uniform(0.05, 0.95), rng.uniform(0.05, 0.95),
+                    rng.uniform(0.025, 0.05), palette=palette, materials=materials,
+                )
+                objects.append(SceneObject(label, bbox))
         return objects
 
     return _compose(
-        "arid", size, seed, "sand", drawer, ["sand", "gravel", "rock", "foliage", "bark"]
+        "arid", size, seed, "sand", drawer,
+        ["sand", "gravel", "rock", "foliage", "bark", "grass"],
     )
 
 

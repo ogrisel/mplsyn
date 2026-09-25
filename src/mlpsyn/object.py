@@ -31,6 +31,7 @@ __all__ = [
     "OBJECTS",
     "draw_boat",
     "draw_building",
+    "draw_bus",
     "draw_bush",
     "draw_car",
     "draw_conifer",
@@ -79,6 +80,24 @@ _CROP_COLORS = [
     "#b58a4b",
     "#7a9b4a",
     "#c9c07a",
+]
+#: Vehicle body colours: mostly neutrals (white/silver/grey/black), with a few
+#: saturated colours so cars, trucks and buses are easy to tell apart.
+_VEHICLE_COLORS = [
+    "#f0f0ee",
+    "#e4e4e0",
+    "#d0d0cc",
+    "#b8b8b4",
+    "#9a9a98",
+    "#6e6e6c",
+    "#3a3a3a",
+    "#1f1f1f",
+    "#2f5fa8",  # blue
+    "#b23a2e",  # red
+    "#d9a520",  # yellow
+    "#3a7d5a",  # green
+    "#7b4a8a",  # purple
+    "#c25b2a",  # orange
 ]
 
 
@@ -628,7 +647,7 @@ def draw_car(ax, rng, budget, cx, cy, size, materials=None, rotation=None):
         rotation = _random_rotation(rng)
     width = size
     height = size * 0.45
-    body = _jitter(rng, _ROOF_COLORS[rng.integers(len(_ROOF_COLORS))], 0.08)
+    body = _jitter(rng, _VEHICLE_COLORS[rng.integers(len(_VEHICLE_COLORS))], 0.08)
 
     def rect(local_x, local_y, w, h, color, zorder, edge="#2f2f2f", lw=0.4):
         center = _rotate([(local_x, local_y)], cx, cy, rotation)[0]
@@ -1056,7 +1075,7 @@ def draw_truck(ax, rng, budget, cx, cy, size, materials=None, rotation=None):
         rotation = _random_rotation(rng)
     width = size
     height = size * 0.42
-    body = _jitter(rng, _ROOF_COLORS[rng.integers(len(_ROOF_COLORS))], 0.08)
+    body = _jitter(rng, _VEHICLE_COLORS[rng.integers(len(_VEHICLE_COLORS))], 0.08)
 
     def rect(local_x, local_y, w, h, color, zorder, edge="#2f2f2f", lw=0.4):
         center = _rotate([(local_x, local_y)], cx, cy, rotation)[0]
@@ -1090,6 +1109,53 @@ def draw_truck(ax, rng, budget, cx, cy, size, materials=None, rotation=None):
         [window[0][1], window[1][1]],
         color="#9fd0e8",
         linewidth=0.8,
+        zorder=5,
+    )
+    return _rotated_bbox(cx, cy, width, height * 1.4, rotation)
+
+
+def draw_bus(ax, rng, budget, cx, cy, size, materials=None, rotation=None):
+    """Bus seen top-down: long body, roof hatches and a window strip."""
+    if rotation is None:
+        rotation = _random_rotation(rng)
+    width = size
+    height = size * 0.4
+    body = _jitter(rng, _VEHICLE_COLORS[rng.integers(len(_VEHICLE_COLORS))], 0.08)
+
+    def rect(local_x, local_y, w, h, color, zorder, edge="#2f2f2f", lw=0.4):
+        center = _rotate([(local_x, local_y)], cx, cy, rotation)[0]
+        budget.add_patch(
+            ax,
+            patches.Rectangle(
+                (center[0] - w / 2, center[1] - h / 2),
+                w,
+                h,
+                angle=rotation,
+                rotation_point="center",
+                facecolor=color,
+                edgecolor=edge,
+                linewidth=lw,
+                zorder=zorder,
+            ),
+        )
+
+    rect(0.04 * width, -0.1 * height, width, height, (0.08, 0.08, 0.08, 0.3), 2, edge="none")
+    for dx in (-0.36, 0.36):
+        for dy in (-0.5, 0.5):
+            rect(dx * width, dy * height, 0.12 * width, 0.3 * height, "#222222", 2)
+    rect(0.0, 0.0, width, height, body, 3)
+    # Two roof hatches and a windscreen strip along the length.
+    for dx in (-0.2, 0.0, 0.2):
+        rect(dx * width, 0.0, 0.1 * width, height * 0.4, _jitter(rng, body, 0.12), 4)
+    window = _rotate(
+        [(-0.46 * width, 0.18 * height), (-0.46 * width, -0.18 * height)], cx, cy, rotation
+    )
+    budget.add_line(
+        ax,
+        [window[0][0], window[1][0]],
+        [window[0][1], window[1][1]],
+        color="#9fd0e8",
+        linewidth=0.9,
         zorder=5,
     )
     return _rotated_bbox(cx, cy, width, height * 1.4, rotation)
@@ -1384,4 +1450,5 @@ OBJECTS = {
     "crossing": draw_crossing,
     "pavement": draw_pavement,
     "planter": draw_planter,
+    "bus": draw_bus,
 }

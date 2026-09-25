@@ -47,6 +47,34 @@ def _area(size, per_shape):
     return max(1, int(size * size / per_shape))
 
 
+def _shade(color, factor):
+    """Scale a colour's brightness by ``factor`` (clipped to [0, 1])."""
+    rgb = np.clip(np.asarray(to_rgb(color), dtype=float) * factor, 0.0, 1.0)
+    return tuple(rgb)
+
+
+# Per-seed base tones. They are deliberately muted (low chroma) so the same
+# material looks varied but never over-saturated across scenes.
+_SAND_TONES = [
+    "#d8b978", "#d2ad6e", "#cfb385", "#e0c48c", "#c9a866", "#dcc08a", "#c8ab72", "#d9b06a",
+]
+_GRASS_TONES = [
+    "#6f8f3f", "#78904c", "#7f955a", "#6b8a45", "#86985c", "#759150", "#647f3c", "#8a9a66",
+]
+_FOLIAGE_TONES = [
+    "#1c3d1a", "#22421f", "#1d3820", "#1f3a22", "#23421e", "#1b3520",
+]
+_CROP_TONES = [
+    "#8faa4a", "#97ac57", "#9aa852", "#8aa347", "#a3ad63", "#90a24e", "#9caf5e",
+]
+
+
+def _base_tone(seed, tones):
+    """Pick one base tone for a material from its palette, deterministically."""
+    palette_rng = np.random.default_rng((seed or 0) * 7 + 1)
+    return tones[int(palette_rng.integers(len(tones)))]
+
+
 def _color_noise(rng, base, spread, n):
     rgb = np.asarray(to_rgb(base), dtype=float)
     factors = 1.0 + rng.uniform(-spread, spread, size=(n, 1))
@@ -192,28 +220,35 @@ def _cracks(ax, rng, budget, n, base, spread, width=0.6):
 
 
 def grass(size: int = IMAGE_SIZE, seed: int | None = None):
-    """Grainy green grass with tonal patches."""
+    """Grainy green grass with tonal patches (muted, varied per seed)."""
+    base = _base_tone(seed, _GRASS_TONES)
+    dark = _shade(base, 0.72)
+    light = _shade(base, 1.18)
 
     def draw(ax, rng, budget):
-        _mottle(ax, rng, budget, _area(size, 300), "#87a24e", spread=0.10, s=340, alpha=0.10)
-        _mottle(ax, rng, budget, _area(size, 520), "#5f7d33", spread=0.10, s=380, alpha=0.07)
-        _speckle(ax, rng, budget, _area(size, 70), "#5f7d33", spread=0.35, s=3.5)
+        _mottle(ax, rng, budget, _area(size, 300), light, spread=0.10, s=340, alpha=0.10)
+        _mottle(ax, rng, budget, _area(size, 520), dark, spread=0.10, s=380, alpha=0.07)
+        _speckle(ax, rng, budget, _area(size, 70), dark, spread=0.30, s=3.5)
         # short blade ticks break up the flat fill
-        _speckle(ax, rng, budget, _area(size, 55), "#557a2c", spread=0.30, s=6.0, marker="|")
-        _speckle(ax, rng, budget, _area(size, 90), "#9cb35e", spread=0.22, s=5.0, marker="|")
+        _speckle(
+            ax, rng, budget, _area(size, 55), _shade(base, 0.6),
+            spread=0.28, s=6.0, marker="|",
+        )
+        _speckle(ax, rng, budget, _area(size, 90), light, spread=0.22, s=5.0, marker="|")
 
-    return render_scene(size, "#6f8f3f", draw, seed=seed)
+    return render_scene(size, base, draw, seed=seed)
 
 
 def foliage(size: int = IMAGE_SIZE, seed: int | None = None):
-    """Clumpy leaf canopy with highlights and shadowed gaps."""
+    """Clumpy leaf canopy with highlights and shadowed gaps (muted, varied)."""
+    base = _base_tone(seed, _FOLIAGE_TONES)
 
     def draw(ax, rng, budget):
-        _cover(ax, rng, budget, _area(size, 260), "#2f6b2c", 0.2, 0.012, 0.035)
-        _cover(ax, rng, budget, _area(size, 1100), "#3f7a2f", 0.2, 0.004, 0.012)
-        _cover(ax, rng, budget, _area(size, 2200), "#6aa63f", 0.15, 0.002, 0.006, alpha=0.7)
+        _cover(ax, rng, budget, _area(size, 260), _shade(base, 1.7), 0.2, 0.012, 0.035)
+        _cover(ax, rng, budget, _area(size, 1100), _shade(base, 2.1), 0.2, 0.004, 0.012)
+        _cover(ax, rng, budget, _area(size, 2200), _shade(base, 3.0), 0.15, 0.002, 0.006, alpha=0.7)
 
-    return render_scene(size, "#1c3d1a", draw, seed=seed)
+    return render_scene(size, base, draw, seed=seed)
 
 
 def asphalt(size: int = IMAGE_SIZE, seed: int | None = None):
@@ -285,7 +320,10 @@ def soil(size: int = IMAGE_SIZE, seed: int | None = None):
 
 
 def sand(size: int = IMAGE_SIZE, seed: int | None = None):
-    """Fine desert sand with coherent wind ripples."""
+    """Fine desert sand with coherent wind ripples (muted, varied per seed)."""
+    base = _base_tone(seed, _SAND_TONES)
+    ridge = _shade(base, 0.90)
+    crest = _shade(base, 0.80)
 
     def draw(ax, rng, budget):
         def ripple_family(theta, spacing, amplitude, wavelength, color, alpha, width):
@@ -294,11 +332,11 @@ def sand(size: int = IMAGE_SIZE, seed: int | None = None):
             corners = np.array([[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [1.0, 1.0]])
             offsets = corners @ normal
             t = np.linspace(-1.2, 1.8, 60)
-            base = np.outer(t, direction)
+            base_line = np.outer(t, direction)
             phase = rng.uniform(0.0, 2 * np.pi)
             for offset in np.arange(offsets.min() + spacing, offsets.max(), spacing):
                 wobble = amplitude * np.sin(t / wavelength * 2 * np.pi + phase + offset * 6)
-                points = base + np.outer(wobble, normal) + offset * normal
+                points = base_line + np.outer(wobble, normal) + offset * normal
                 budget.add_line(
                     ax,
                     points[:, 0],
@@ -311,18 +349,18 @@ def sand(size: int = IMAGE_SIZE, seed: int | None = None):
         theta = rng.uniform(0.0, np.pi)
         ripple_family(
             theta, rng.uniform(0.05, 0.09), rng.uniform(0.008, 0.02),
-            rng.uniform(0.15, 0.25), _jitter(rng, "#c9a866", 0.06), 1.0, rng.uniform(0.8, 1.4),
+            rng.uniform(0.15, 0.25), _jitter(rng, ridge, 0.06), 1.0, rng.uniform(0.8, 1.4),
         )
         # fainter cross-ripples give a wind-sculpted, non-repetitive look
         ripple_family(
             theta + np.deg2rad(rng.uniform(65, 115)), rng.uniform(0.12, 0.2),
             rng.uniform(0.004, 0.01), rng.uniform(0.2, 0.35),
-            _jitter(rng, "#b89a5c", 0.06), 0.35, 0.7,
+            _jitter(rng, crest, 0.06), 0.35, 0.7,
         )
-        _speckle(ax, rng, budget, _area(size, 90), "#c9a866", spread=0.10, s=2.0)
-        _speckle(ax, rng, budget, _area(size, 150), "#b8995a", spread=0.12, s=1.8)
+        _speckle(ax, rng, budget, _area(size, 90), ridge, spread=0.10, s=2.0)
+        _speckle(ax, rng, budget, _area(size, 150), crest, spread=0.12, s=1.8)
 
-    return render_scene(size, "#d8b978", draw, seed=seed)
+    return render_scene(size, base, draw, seed=seed)
 
 
 def water(size: int = IMAGE_SIZE, seed: int | None = None):
@@ -336,11 +374,14 @@ def water(size: int = IMAGE_SIZE, seed: int | None = None):
 
 
 def crop(size: int = IMAGE_SIZE, seed: int | None = None):
-    """A cultivated crop surface: grainy, with soft plough bands (no hard rows)."""
+    """A cultivated crop surface: grainy, with soft plough bands (muted, varied)."""
+    base = _base_tone(seed, _CROP_TONES)
+    light = _shade(base, 1.16)
+    dark = _shade(base, 0.82)
 
     def draw(ax, rng, budget):
-        _mottle(ax, rng, budget, _area(size, 350), "#a8b24f", spread=0.12, s=300, alpha=0.16)
-        _mottle(ax, rng, budget, _area(size, 600), "#7f9a3f", spread=0.10, s=320, alpha=0.08)
+        _mottle(ax, rng, budget, _area(size, 350), light, spread=0.12, s=300, alpha=0.16)
+        _mottle(ax, rng, budget, _area(size, 600), dark, spread=0.10, s=320, alpha=0.08)
         for _ in range(int(rng.integers(8, 14))):
             y = rng.uniform(0.0, 1.0)
             x0 = rng.uniform(0.0, 0.4)
@@ -349,12 +390,12 @@ def crop(size: int = IMAGE_SIZE, seed: int | None = None):
                 ax,
                 [x0, x0 + length],
                 [y, y + rng.uniform(-0.02, 0.02)],
-                color=_jitter(rng, "#7f9a3f", 0.12),
+                color=_jitter(rng, dark, 0.12),
                 linewidth=rng.uniform(1.5, 4.0),
                 alpha=0.25,
             )
-        _speckle(ax, rng, budget, _area(size, 80), "#9aa84f", spread=0.25, s=3.0)
-        _speckle(ax, rng, budget, _area(size, 120), "#b7c266", spread=0.18, s=4.0, marker="|")
+        _speckle(ax, rng, budget, _area(size, 80), dark, spread=0.22, s=3.0)
+        _speckle(ax, rng, budget, _area(size, 120), light, spread=0.18, s=4.0, marker="|")
 
     return render_scene(size, "#8faa4a", draw, seed=seed)
 
