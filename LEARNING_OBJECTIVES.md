@@ -71,8 +71,8 @@ whether an accuracy number actually means something.
 **Key concepts:** semantic segmentation, softmax over classes per pixel,
 `ignore_index`, IoU / mIoU, pixel confusion matrix, class imbalance.
 
-**Exercises.** Explain `ignore_index=0`; find the lowest-IoU classes and relate
-them to class frequency and to the weighted-loss comparison.
+**Exercises.** Find the lowest-IoU classes and relate them to class frequency and
+to the weighted-loss comparison.
 
 **After this notebook:** you can train and honestly evaluate a segmentation
 model and diagnose its per-class behaviour.
