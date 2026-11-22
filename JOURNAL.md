@@ -3,6 +3,23 @@
 Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
+### 2026-09-24 20:00 — Educational review + LEARNING_OBJECTIVES.md
+
+- Reviewed the educational value of all eight notebooks: the bottom-up
+  progression, stated objectives/exercises/self-checks, per-figure read-outs and
+  the honest evaluation toolkit (baselines, val loss, confusion matrices +
+  class histograms, PR curves, calibration, error taxonomy, resolution
+  ablation) all hold up.
+- Extracted every notebook's **learning objectives, key concepts, exercises and
+  "after this notebook" outcome** into a new file `LEARNING_OBJECTIVES.md`,
+  including derived objectives for the generator notebooks 01-04, plus an
+  educational-value review (strengths and gaps) and a learning-path table.
+- Cleaned stale text found during the review: notebook 03's intro now states the
+  fourteen scene types, a duplicated "Ten scene types" read-out was removed, and
+  notebook 01's "three seeds" became "five".
+- README links to the new file and no longer says "Apple MPS" for the training
+  notebooks (device is auto-selected).
+
 ### 2026-09-24 19:10 — Round 42 (model-notebook top-5)
 
 Iteratively implemented the five highest-priority review items:

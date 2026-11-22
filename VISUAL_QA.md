@@ -1303,3 +1303,12 @@ recipe tables in 05-08, a detection **error taxonomy** (localisation 524 >
 background 252 > duplicates 75 > class confusion 2) and a **resolution
 ablation** (96 px 0.41/0.39 vs 64 px 0.13/0.12 mAP@0.5). All new figures have a
 read-out below them; 08 is 4.0 MB.
+
+## Round 43 — educational review
+
+Reviewed all eight notebooks for teaching value and extracted the objectives to
+`LEARNING_OBJECTIVES.md`. The bottom-up progression, per-figure read-outs and
+honest evaluation toolkit are solid. Stale text fixed (03 intro/duplicate
+"Ten scene types" read-out; 01 "three seeds"). Planned follow-ups recorded in
+`ROADMAP.md` (objectives for 01-04, learning path, 08 length, 07 depth, generator
+failure galleries, prerequisites/time).

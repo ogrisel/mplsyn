@@ -736,3 +736,19 @@ read-out cites a stale number. Defects found:
 - **Resolution ablation (08)**: same architecture at 64 px scores **0.13 val /
   0.12 test** mAP@0.5 vs **0.41 / 0.39** at 96 px, demonstrating the resolution
   ceiling.
+
+## Round 43 — educational review (planned follow-ups)
+
+Full objectives are now in `LEARNING_OBJECTIVES.md`. The review found these
+follow-ups, in priority order:
+
+1. **Give 01-04 explicit objectives/exercises** (the file supplies derived ones)
+   and a small "try this" prompt per generator notebook.
+2. **Add a cross-notebook learning path** to the README (link now present; expand
+   into a short guided tour).
+3. **Split or add a "contents / how to skim" box to 08** (~50 cells, 4-5 min).
+4. **Deepen 07's "why" notes**: Dice vs IoU, and that temperature scaling does
+   not change the argmax/accuracy.
+5. **Add a "when does this look wrong?" failure gallery** to the generator
+   notebooks (overlapping conifers, clipped shadows, ...).
+6. **Add prerequisites and a rough time budget** to each notebook.

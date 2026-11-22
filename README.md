@@ -41,7 +41,10 @@ See [`notebooks/`](notebooks/) for one notebook per level:
 - [`03_scene_generation.ipynb`](notebooks/03_scene_generation.ipynb) — scenes
 - [`04_scene_diversity.ipynb`](notebooks/04_scene_diversity.ipynb) — scene sampling + annotations
 
-Training notebooks (PyTorch, Apple MPS):
+What each notebook teaches (objectives, exercises and prerequisites) is
+collected in [`LEARNING_OBJECTIVES.md`](LEARNING_OBJECTIVES.md).
+
+Training notebooks (PyTorch; runs on CUDA / MPS / XPU / CPU):
 
 - [`05_train_scene_classification.ipynb`](notebooks/05_train_scene_classification.ipynb) — image-level scene labels
 - [`06_train_semantic_segmentation.ipynb`](notebooks/06_train_semantic_segmentation.ipynb) — per-pixel class masks
@@ -52,7 +55,7 @@ The training notebooks need PyTorch and scikit-learn, which are installed with
 pip (no cp314 conda wheels) into the dev environment:
 
 ```bash
-pixi run -e dev install-torch      # PyTorch (Apple MPS)
+pixi run -e dev install-torch      # PyTorch (auto device: CUDA/MPS/XPU/CPU)
 pixi run -e dev install-sklearn    # scikit-learn (anchor k-means)
 ```
 
