@@ -759,3 +759,12 @@ Notebooks are split by purpose: `notebooks/dataset_qa/` holds the generator and
 inspection notebooks (01-04) and `notebooks/modeling/` holds the training/
 evaluation notebooks (05-08). Filenames are unchanged; all documentation links
 were updated.
+
+## Round 45 — dataset generation moved to `mlpsyn.datasets`
+
+Dataset builders that lived inline in the modeling notebooks now live in
+`src/mlpsyn/datasets.py` (numpy-only, torch/sklearn kept out of module scope):
+classification mixtures + splits, segmentation pairs, cloud pairs, detection
+images + objects, anchors/encoding, and forest instances. Notebooks 05-08 import
+them and keep only training/evaluation code. Behaviour is unchanged (metrics
+verified identical) and `tests/test_datasets.py` covers the module.

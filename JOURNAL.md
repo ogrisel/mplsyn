@@ -3,6 +3,23 @@
 Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
+### 2026-09-24 21:10 — Extract dataset generation into mlpsyn.datasets
+
+- Added `src/mlpsyn/datasets.py`: a numpy-only module with the reusable builders
+  used by the modeling notebooks — `make_classification_data` (+ `split_classification`,
+  `blend_two_scenes`, scene/class mappings), `make_segmentation_data`,
+  `make_cloud_data`, `make_detection_data` (+ `shape_iou`, `kmeans_anchors`,
+  `encode_targets`, detection class/label maps) and `make_forest_data`
+  (+ `tree_box`, `forest_targets`). Torch/scikit-learn are not imported at module
+  scope (sklearn is lazy), so `import mlpsyn` stays light.
+- Rewired notebooks 05-08 to import these helpers and keep only model/training
+  code; torch tensor wrapping happens in the notebook.
+- Added `tests/test_datasets.py` (7 tests). All metrics are unchanged
+  (05 0.804/0.714, 06 0.785/0.497, 07 0.838/0.848, 08 detection 0.406/0.390,
+  instance/ablation unchanged), confirming a behaviour-preserving refactor.
+- Fixed one dropped import (`SEGMENTATION_CLASSES`) in notebook 06 discovered by
+  the re-run.
+
 ### 2026-09-24 20:45 — Focus learning objectives on the modeling notebooks
 
 - Rewrote `LEARNING_OBJECTIVES.md` around the four modeling notebooks (05-08)

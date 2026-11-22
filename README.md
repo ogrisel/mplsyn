@@ -32,7 +32,12 @@ pixi run -e dev lab        # launch JupyterLab on the notebooks
 3. **objects** (`mlpsyn.object`) — geometric objects filled with materials
    (tree, building, field plot, car, ...);
 4. **scenes** (`mlpsyn.scene`) — a material ground populated with
-   material-filled objects, plus object-level bounding-box annotations.
+   material-filled objects, plus object-level bounding-box annotations;
+5. **datasets** (`mlpsyn.datasets`) — numpy-only, reusable dataset builders used
+   by the modeling notebooks (classification mixtures, segmentation / cloud
+   pairs, detection images + objects, forest instances); anchors use
+   scikit-learn. Keeping dataset generation here means the notebooks train, not
+   preprocess, and `import mlpsyn` stays free of PyTorch.
 
 Notebooks are split into two folders:
 
