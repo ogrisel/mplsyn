@@ -70,7 +70,8 @@ pixi run -e dev install-sklearn    # scikit-learn (anchor k-means)
 
 The modeling notebooks load their data with `mplsyn.datasets.load_*`, which read a
 pregenerated `.npz` from the local cache (`~/.cache/mplsyn`, or `$MPLSYN_DATA_HOME`),
-else download it from `$MPLSYN_DATA_URL`, else generate it once and cache it.
+else download it from `$MPLSYN_DATA_URL` (default: the
+[`v1` release](https://github.com/ogrisel/mplsyn/releases/tag/v1)), else generate it once and cache it.
 To build the artifacts for every notebook into `./staging/` (git-ignored):
 
 ```bash

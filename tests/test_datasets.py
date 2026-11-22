@@ -106,6 +106,7 @@ def test_forest_data_and_targets():
 def data_dir(tmp_path, monkeypatch):
     monkeypatch.setenv("MPLSYN_DATA_HOME", str(tmp_path / "cache"))
     monkeypatch.delenv("MPLSYN_DATA_URL", raising=False)
+    monkeypatch.setattr("mplsyn.datasets.DEFAULT_DATA_URL", None)  # stay offline
     return tmp_path / "cache"
 
 
@@ -159,12 +160,14 @@ def test_load_downloads_pregenerated_artifact(data_dir, tmp_path, monkeypatch):
 
 def test_load_falls_back_to_generation_when_download_fails(data_dir, tmp_path, monkeypatch):
     monkeypatch.setenv("MPLSYN_DATA_URL", (tmp_path / "missing").as_uri())
-    images, _ = load_cloud_data(2, size=24, seed=4)
+    with pytest.warns(UserWarning, match="Could not download"):
+        images, _ = load_cloud_data(2, size=24, seed=4)
     assert images.shape == (2, 3, 24, 24)
     # A corrupt cached file is regenerated rather than raising.
     (artifact,) = data_dir.glob("cloud-*.npz")
     artifact.write_bytes(b"not an npz")
-    images, _ = load_cloud_data(2, size=24, seed=4)
+    with pytest.warns(UserWarning, match="Could not download"):
+        images, _ = load_cloud_data(2, size=24, seed=4)
     assert images.shape == (2, 3, 24, 24)
 
 
@@ -205,4 +208,18 @@ def test_stage_datasets_writes_loadable_artifacts(tmp_path, monkeypatch, data_di
         "mplsyn.datasets.make_cloud_data",
         lambda *args, **kwargs: pytest.fail("should have used the staged file"))
     images, _ = load_cloud_data(2, size=24)
+    assert images.shape == (2, 3, 24, 24)
+
+
+def test_missing_release_asset_warns(data_dir, monkeypatch):
+    import io
+    import urllib.error
+
+    def not_found(url, timeout=None):
+        raise urllib.error.HTTPError(url, 404, "Not Found", {}, io.BytesIO(b""))
+
+    monkeypatch.setenv("MPLSYN_DATA_URL", "https://example.invalid/release")
+    monkeypatch.setattr("mplsyn.datasets.urllib.request.urlopen", not_found)
+    with pytest.warns(UserWarning, match="404"):
+        images, _ = load_cloud_data(2, size=24, seed=8)
     assert images.shape == (2, 3, 24, 24)

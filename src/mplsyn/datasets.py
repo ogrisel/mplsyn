@@ -13,6 +13,7 @@ import pathlib
 import tempfile
 import urllib.error
 import urllib.request
+import warnings
 
 import numpy as np
 from matplotlib.path import Path
@@ -484,10 +485,11 @@ DATASET_VERSION = "v1"
 #: Environment variable overriding the cache directory.
 DATA_HOME_ENV = "MPLSYN_DATA_HOME"
 #: Environment variable holding the base URL of pregenerated artifacts, e.g.
-#: ``https://github.com/<owner>/mplsyn/releases/download/datasets-v1``.
+#: ``https://github.com/ogrisel/mplsyn/releases/download/v1``.
 DATA_URL_ENV = "MPLSYN_DATA_URL"
-#: Default base URL used when ``MPLSYN_DATA_URL`` is unset (None = generate).
-DEFAULT_DATA_URL = None
+#: Default base URL used when ``MPLSYN_DATA_URL`` is unset: the GitHub release
+#: whose tag is ``DATASET_VERSION``. Set it to None to always generate locally.
+DEFAULT_DATA_URL = f"https://github.com/ogrisel/mplsyn/releases/download/{DATASET_VERSION}"
 
 
 def data_home():
@@ -518,9 +520,17 @@ def _download(url, destination):
                     handle.write(chunk)
         temporary.replace(destination)
         return True
-    except (urllib.error.URLError, OSError, ValueError):
+    except (urllib.error.URLError, OSError, ValueError) as error:
         if temporary is not None:
             temporary.unlink(missing_ok=True)
+        if isinstance(error, urllib.error.HTTPError):
+            error.close()  # release the error response body
+        # Always tell the user: a 404 usually means this parameter set was not
+        # published as a release asset, and generating it locally is slow.
+        warnings.warn(
+            f"Could not download {url} ({error}); generating the dataset locally.",
+            stacklevel=2,
+        )
         return False
 
 
