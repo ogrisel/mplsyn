@@ -3,6 +3,20 @@
 Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
+### 2026-11-22 23:55 — Notebook formatting and 06 exercises
+
+- Formatted all code cells of the notebooks with `ruff format` (black-compatible,
+  `line-length = 100` from `pyproject.toml`); AST of the 83 code cells of the
+  non-modified notebooks verified identical. New task `pixi run format-check`.
+- The hidden-solution cells of 05 and 06 start with `# fmt: off` so that the
+  blank-line padding is not collapsed by the formatter.
+- 06: exercise "write the rest of the U-Net forward pass" (template with `__init__`
+  and first block), exercise "predict then confirm the input/output shapes of
+  `model(some_random_input_batch)`" and exercise "answer questions, then write
+  the `torchinfo.summary` call". The shape check cell runs in
+  `torch.random.fork_rng()` so it does not change training. Re-executed: val mIoU
+  0.494, test 0.501 (unchanged).
+
 ### 2026-09-24 22:00 — BSD 3-Clause license
 
 - Added `LICENSE` (BSD 3-Clause, Copyright 2026 Olivier Grisel) and referenced it

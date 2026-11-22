@@ -37,6 +37,7 @@ mplsyn = { path = ".", editable = true }
 test = "pytest"
 lint = "ruff check ."
 format = "ruff format ."
+format-check = "ruff format --check notebooks"
 lab = "jupyter lab notebooks"
 stage-datasets = "python -m mplsyn.stage_datasets staging"
 install-torch = "python -m pip install torch torchinfo"
