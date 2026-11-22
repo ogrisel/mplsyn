@@ -1,8 +1,8 @@
-# mlpsyn
+# mplsyn
 
 Synthetic image generation for computer-vision training, built on matplotlib.
 
-`mlpsyn` renders 600x600 images with fully controlled geometry and produces
+`mplsyn` renders 600x600 images with fully controlled geometry and produces
 matching annotations at the image, object and pixel level. It is designed to
 mimic satellite/aerial and medical imagery without needing large asset
 collections.
@@ -23,21 +23,21 @@ pixi run -e dev lab        # launch JupyterLab on the notebooks
 
 ## Examples
 
-`mlpsyn` builds images in four layers, each reusing the one below:
+`mplsyn` builds images in four layers, each reusing the one below:
 
-1. **materials** (`mlpsyn.materials`) — low-level surface textures: grainy
+1. **materials** (`mplsyn.materials`) — low-level surface textures: grainy
    asphalt, grass, foliage, soil, water, bark, roof;
-2. **backgrounds** (`mlpsyn.satellite`, `mlpsyn.textures`) — land-cover patterns
+2. **backgrounds** (`mplsyn.satellite`, `mplsyn.textures`) — land-cover patterns
    built on materials;
-3. **objects** (`mlpsyn.object`) — geometric objects filled with materials
+3. **objects** (`mplsyn.object`) — geometric objects filled with materials
    (tree, building, field plot, car, ...);
-4. **scenes** (`mlpsyn.scene`) — a material ground populated with
+4. **scenes** (`mplsyn.scene`) — a material ground populated with
    material-filled objects, plus object-level bounding-box annotations;
-5. **datasets** (`mlpsyn.datasets`) — numpy-only, reusable dataset builders used
+5. **datasets** (`mplsyn.datasets`) — numpy-only, reusable dataset builders used
    by the modeling notebooks (classification mixtures, segmentation / cloud
    pairs, detection images + objects, forest instances); anchors use
    scikit-learn. Keeping dataset generation here means the notebooks train, not
-   preprocess, and `import mlpsyn` stays free of PyTorch.
+   preprocess, and `import mplsyn` stays free of PyTorch.
 
 Notebooks are split into two folders:
 
@@ -107,7 +107,7 @@ out in each notebook's "Interpreting these numbers" section.
 Low-level materials:
 
 ```python
-from mlpsyn.materials import MATERIALS, generate_material
+from mplsyn.materials import MATERIALS, generate_material
 
 generate_material("asphalt", size=600, seed=0)
 MATERIALS.keys()
@@ -118,7 +118,7 @@ MATERIALS.keys()
 Satellite land-cover backgrounds (built on materials):
 
 ```python
-from mlpsyn.satellite import TEXTURES, generate_satellite_texture
+from mplsyn.satellite import TEXTURES, generate_satellite_texture
 
 generate_satellite_texture("dense_forest", size=600, seed=0)
 TEXTURES.keys()
@@ -130,7 +130,7 @@ TEXTURES.keys()
 Objects and scenes (with annotations):
 
 ```python
-from mlpsyn.scene import generate_scene
+from mplsyn.scene import generate_scene
 
 scene = generate_scene("urban", size=600, seed=0)
 scene.image.shape       # (600, 600, 3)

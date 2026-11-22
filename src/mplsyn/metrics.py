@@ -1,7 +1,7 @@
 """Dataset-level diversity metrics.
 
 These complement the human visual-inspection loop in ``VISUAL_QA.md`` by
-summarising a collection of :class:`~mlpsyn.scene.Scene` objects: what labels
+summarising a collection of :class:`~mplsyn.scene.Scene` objects: what labels
 appear, how balanced they are, how many objects each scene holds and how evenly
 objects are spread over the frame.
 """
@@ -12,7 +12,7 @@ from collections import Counter
 
 import numpy as np
 
-from mlpsyn.scene import Scene
+from mplsyn.scene import Scene
 
 __all__ = [
     "label_histogram",

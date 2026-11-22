@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from mlpsyn.satellite import TEXTURES, generate_satellite_texture
-from mlpsyn.textures import MAX_SHAPES, ShapeBudget
+from mplsyn.satellite import TEXTURES, generate_satellite_texture
+from mplsyn.textures import MAX_SHAPES, ShapeBudget
 
 
 def test_registry_has_ten_textures():

@@ -1,6 +1,6 @@
 """Annotation export helpers and dataset splitting.
 
-A :class:`~mlpsyn.scene.Scene` already carries object-level boxes in normalised
+A :class:`~mplsyn.scene.Scene` already carries object-level boxes in normalised
 coordinates with a bottom-left origin. These helpers convert them to the two
 formats used by most detection pipelines:
 
@@ -18,7 +18,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from mlpsyn.scene import Scene
+from mplsyn.scene import Scene
 
 __all__ = [
     "category_index",

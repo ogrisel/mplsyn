@@ -1,10 +1,10 @@
-from mlpsyn.metrics import (
+from mplsyn.metrics import (
     diversity_report,
     label_histogram,
     objects_per_scene,
     spatial_coverage,
 )
-from mlpsyn.scene import generate_scene
+from mplsyn.scene import generate_scene
 
 
 def _scenes():

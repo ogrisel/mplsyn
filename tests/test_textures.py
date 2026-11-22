@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from mlpsyn.textures import MAX_SHAPES, generate_texture, save_texture
+from mplsyn.textures import MAX_SHAPES, generate_texture, save_texture
 
 
 def test_output_shape_and_dtype():

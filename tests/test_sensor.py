@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from mlpsyn.scene import generate_scene
-from mlpsyn.sensor import (
+from mplsyn.scene import generate_scene
+from mplsyn.sensor import (
     EFFECTS,
     MAX_GAUSSIAN_SIGMA,
     MIN_POISSON_SCALE,

@@ -1,21 +1,21 @@
-"""mlpsyn: synthetic image generation for computer-vision training."""
+"""mplsyn: synthetic image generation for computer-vision training."""
 
-from mlpsyn.annotations import (
+from mplsyn.annotations import (
     category_index,
     coco_dataset,
     scene_to_coco,
     train_val_test_split,
     yolo_lines,
 )
-from mlpsyn.materials import MATERIALS, generate_material, material_textures
-from mlpsyn.metrics import (
+from mplsyn.materials import MATERIALS, generate_material, material_textures
+from mplsyn.metrics import (
     diversity_report,
     label_histogram,
     objects_per_scene,
     spatial_coverage,
 )
-from mlpsyn.object import OBJECTS, draw_object
-from mlpsyn.satellite import (
+from mplsyn.object import OBJECTS, draw_object
+from mplsyn.satellite import (
     TEXTURE_DESCRIPTIONS,
     TEXTURES,
     agricultural_fields,
@@ -30,16 +30,16 @@ from mlpsyn.satellite import (
     urban_buildings,
     water_river,
 )
-from mlpsyn.scene import SCENES, Scene, SceneObject, generate_scene
-from mlpsyn.segmentation import (
+from mplsyn.scene import SCENES, Scene, SceneObject, generate_scene
+from mplsyn.segmentation import (
     CLASS_COLORS,
     MATERIAL_SEG_CLASS,
     SEGMENTATION_CLASSES,
     semantic_labels,
     semantic_mask,
 )
-from mlpsyn.sensor import EFFECTS, apply_sensor
-from mlpsyn.textures import MAX_SHAPES, generate_texture
+from mplsyn.sensor import EFFECTS, apply_sensor
+from mplsyn.textures import MAX_SHAPES, generate_texture
 
 __all__ = [
     "EFFECTS",

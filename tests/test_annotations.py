@@ -1,14 +1,14 @@
 import numpy as np
 import pytest
 
-from mlpsyn.annotations import (
+from mplsyn.annotations import (
     category_index,
     coco_dataset,
     scene_to_coco,
     train_val_test_split,
     yolo_lines,
 )
-from mlpsyn.scene import generate_scene
+from mplsyn.scene import generate_scene
 
 
 @pytest.fixture

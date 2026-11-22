@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 from matplotlib.figure import Figure
 
-from mlpsyn.object import OBJECTS, draw_object, draw_river, draw_road
-from mlpsyn.textures import ShapeBudget
+from mplsyn.object import OBJECTS, draw_object, draw_river, draw_road
+from mplsyn.textures import ShapeBudget
 
 
 def _axes():

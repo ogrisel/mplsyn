@@ -1,6 +1,6 @@
 # Roadmap
 
-`mlpsyn` generates synthetic images with detailed annotations to train
+`mplsyn` generates synthetic images with detailed annotations to train
 computer-vision models. It targets two visual domains that share a need for
 large volumes of cheap, perfectly-labelled data:
 
@@ -37,7 +37,7 @@ primitives, with no domain semantics yet.
 
 ### 1b. Materials (low-level surface textures)
 
-- [x] Material registry (`mlpsyn.materials`): grass, foliage, asphalt, concrete,
+- [x] Material registry (`mplsyn.materials`): grass, foliage, asphalt, concrete,
       soil, sand, water, crop, rock, snow, bark, roof, gravel, mud.
 - [x] `fill_patch` reuses a material texture as a clipped fill for any shape.
 - [x] Materials reused by objects (fills) and scene grounds.
@@ -46,14 +46,14 @@ primitives, with no domain semantics yet.
 
 - [ ] Scene descriptors (seed, spec) serialised to JSON next to each image.
 - [x] Image-level labels derived from the generator (e.g. dominant class); scene classification notebook.
-- [x] Train/val/test split helpers (`mlpsyn.annotations.train_val_test_split`).
+- [x] Train/val/test split helpers (`mplsyn.annotations.train_val_test_split`).
 
 ### 3. Object-level annotations
 
 - [x] Bounding boxes with class ids, emitted as the primitives are drawn
-      (`mlpsyn.object` returns bboxes; `mlpsyn.scene` collects `SceneObject`s).
+      (`mplsyn.object` returns bboxes; `mplsyn.scene` collects `SceneObject`s).
 - [ ] Support for rotated boxes.
-- [x] Export to COCO / YOLO formats (`mlpsyn.annotations`).
+- [x] Export to COCO / YOLO formats (`mplsyn.annotations`).
 
 ### 4. Pixel-level annotations
 
@@ -75,7 +75,7 @@ primitives, with no domain semantics yet.
 - [x] Boundary / transition scenes between two regions (`forest_fields`,
       `urban_fringe`, e.g. woodland next to farmland or a city next to fields,
       optionally separated by a river).
-- [x] Sensor and atmospheric post-processing (`mlpsyn.sensor`): Gaussian/Poisson
+- [x] Sensor and atmospheric post-processing (`mplsyn.sensor`): Gaussian/Poisson
       noise, optical blur, haze and cloud cover with ground shadows.
 - [x] Scene-diversity sampling notebook: 25 random scene types with varying
       post-processing and cloud coverage (at least 70 % clear frames).
@@ -114,7 +114,7 @@ Rendering quality is driven by an explicit visual-inspection loop.
 - [x] `notebooks/dataset_qa/04_scene_diversity.ipynb`: 25 random scene types with mixed
       sensor noise, haze and variable cloud cover (>= 70 % clear) to assess
       composition diversity across seeds.
-- [x] Automatic diversity metrics (`mlpsyn.metrics`: label histogram, object
+- [x] Automatic diversity metrics (`mplsyn.metrics`: label histogram, object
       counts, spatial coverage, entropy) to complement the human inspection.
 - [ ] Defect tracking for the ever-growing scene vocabulary.
 
@@ -223,11 +223,11 @@ notebook sections, and add three small PyTorch training notebooks (MPS).
 1. **R8-1 — no dead-end roads**: `_close_network` adds an unused incident edge
    to every degree-1 cell of the field/boundary road spanning tree, so rural
    roads no longer stop inside a field. **Done**.
-2. **R8-2 — pixel semantic segmentation**: `mlpsyn.segmentation` re-renders a
-   scene with flat per-material class colours (mask mode in `mlpsyn._mode`),
+2. **R8-2 — pixel semantic segmentation**: `mplsyn.segmentation` re-renders a
+   scene with flat per-material class colours (mask mode in `mplsyn._mode`),
    maps pixels to 13 classes (0 = unlabeled) and exposes `semantic_mask`.
    **Done**.
-3. **R8-3 — cloud occlusion mask**: `mlpsyn.sensor.cloud_alpha` and
+3. **R8-3 — cloud occlusion mask**: `mplsyn.sensor.cloud_alpha` and
    `clouds(..., return_mask=True)` expose the soft occlusion field used by the
    atmosphere. **Done**.
 4. **R8-4 — notebook 04 sections**: four rows per image (original, +boxes,
@@ -385,7 +385,7 @@ Documentation, coastal-city generation and field boundaries.
 
 1. **R18-1 — docstrings**: short docstrings added to the notebook helper
    functions (make_data, encode_targets, decode_*, forest_*, crop_resize, ...)
-   and to the key `mlpsyn` helpers. **Done**.
+   and to the key `mplsyn` helpers. **Done**.
 2. **R18-2 — coastal cities**: new `coastal_city` scene with a rubble
    **breakwater**, **piers** on pilings and a sheltered **marina** (finger docks
    + moored boats), plus a coast road, waterfront buildings, parking, cars and a
@@ -590,7 +590,7 @@ runtimes do not grow much.
 
 Requested: make scene classification harder with ambiguous scenes.
 
-- **New transitional scene types** in `mlpsyn.scene`: `savanna` (arid ground,
+- **New transitional scene types** in `mplsyn.scene`: `savanna` (arid ground,
   nearly forest-dense trees), `woodland_pasture` (meadow gone half-woodland),
   `scrubland` (rocky and dry, no trees). Registered in `SCENES`, rendered in 03,
   sampled in 04, and used in the classification palette (savanna/scrubland ->
@@ -760,10 +760,10 @@ inspection notebooks (01-04) and `notebooks/modeling/` holds the training/
 evaluation notebooks (05-08). Filenames are unchanged; all documentation links
 were updated.
 
-## Round 45 — dataset generation moved to `mlpsyn.datasets`
+## Round 45 — dataset generation moved to `mplsyn.datasets`
 
 Dataset builders that lived inline in the modeling notebooks now live in
-`src/mlpsyn/datasets.py` (numpy-only, torch/sklearn kept out of module scope):
+`src/mplsyn/datasets.py` (numpy-only, torch/sklearn kept out of module scope):
 classification mixtures + splits, segmentation pairs, cloud pairs, detection
 images + objects, anchors/encoding, and forest instances. Notebooks 05-08 import
 them and keep only training/evaluation code. Behaviour is unchanged (metrics

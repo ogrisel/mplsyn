@@ -3,7 +3,7 @@ from collections import Counter
 import numpy as np
 import pytest
 
-from mlpsyn.scene import (
+from mplsyn.scene import (
     SCENES,
     _close_network,
     _distance_to_polyline,
@@ -83,7 +83,7 @@ def test_scene_labels_and_pixel_bbox():
 
 
 def test_pixel_bbox_uses_top_left_origin():
-    from mlpsyn.scene import SceneObject
+    from mplsyn.scene import SceneObject
 
     obj = SceneObject("x", (0.1, 0.2, 0.3, 0.4))
     assert obj.pixel_bbox(100) == (10, 60, 30, 80)

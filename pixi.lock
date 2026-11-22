@@ -3280,5 +3280,5 @@ packages:
   size: 433687
   timestamp: 1786599629846
 - pypi: ./
-  name: mlpsyn
+  name: mplsyn
   requires_python: '>=3.14'

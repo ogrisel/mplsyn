@@ -1,14 +1,14 @@
 import numpy as np
 
-from mlpsyn.scene import generate_scene
-from mlpsyn.segmentation import (
+from mplsyn.scene import generate_scene
+from mplsyn.segmentation import (
     CLASS_COLORS,
     MATERIAL_SEG_CLASS,
     SEGMENTATION_CLASSES,
     semantic_label_map,
     semantic_mask,
 )
-from mlpsyn.sensor import cloud_alpha, clouds
+from mplsyn.sensor import cloud_alpha, clouds
 
 
 def test_segmentation_class_and_material_maps_are_consistent():

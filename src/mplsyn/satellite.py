@@ -20,8 +20,8 @@ from __future__ import annotations
 import numpy as np
 from matplotlib import patches
 
-from mlpsyn.materials import MATERIALS, fill_patch
-from mlpsyn.textures import IMAGE_SIZE, _blob, _jitter, render_scene
+from mplsyn.materials import MATERIALS, fill_patch
+from mplsyn.textures import IMAGE_SIZE, _blob, _jitter, render_scene
 
 __all__ = [
     "TEXTURES",

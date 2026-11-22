@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from mlpsyn.scene import generate_scene
+from mplsyn.scene import generate_scene
 
 __all__ = [
     "CLASS_COLORS",
@@ -106,5 +106,5 @@ def semantic_mask(scene_name: str, size: int = 256, seed: int | None = None):
 
 
 def semantic_labels(scene, threshold: float = 0.30) -> np.ndarray:
-    """Return class ids for a mask-mode :class:`~mlpsyn.scene.Scene`."""
+    """Return class ids for a mask-mode :class:`~mplsyn.scene.Scene`."""
     return semantic_label_map(scene.image, threshold=threshold)

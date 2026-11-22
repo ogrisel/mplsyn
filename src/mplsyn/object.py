@@ -2,7 +2,7 @@
 
 Objects sit above the material layer. Their geometry (roof, canopy, water, crop
 surface, road, ...) is filled with a *material texture* from
-:mod:`mlpsyn.materials`, so objects inherit realistic grain instead of flat
+:mod:`mplsyn.materials`, so objects inherit realistic grain instead of flat
 colours.
 
 Each point object has the signature::
@@ -23,9 +23,9 @@ from matplotlib import patches
 from matplotlib.colors import to_rgb
 from matplotlib.transforms import TransformedPatchPath
 
-from mlpsyn._mode import mask_mode
-from mlpsyn.materials import fill_patch
-from mlpsyn.textures import _jitter
+from mplsyn._mode import mask_mode
+from mplsyn.materials import fill_patch
+from mplsyn.textures import _jitter
 
 __all__ = [
     "OBJECTS",

@@ -18,7 +18,7 @@ from matplotlib import patches
 from matplotlib.colors import to_rgb
 from matplotlib.transforms import Affine2D, TransformedPatchPath
 
-from mlpsyn.textures import IMAGE_SIZE, _blob, _jitter, render_scene
+from mplsyn.textures import IMAGE_SIZE, _blob, _jitter, render_scene
 
 __all__ = [
     "MATERIALS",

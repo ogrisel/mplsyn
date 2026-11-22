@@ -25,8 +25,6 @@ the test metric once.
 **Role.** The simplest model task: one label per image, on a deliberately
 ambiguous dataset.
 
-**Prerequisites.** Scenes and their image-level labels (generator notebooks 01-03).
-
 **By the end you can:**
 - turn rendered scenes into a class-balanced image-level dataset, including
   two-scene **mixtures** whose rival is drawn from a confusable set;
@@ -55,7 +53,7 @@ whether an accuracy number actually means something.
 
 **Role.** From one label per image to one label per pixel.
 
-**Prerequisites.** Scenes plus pixel-aligned semantic masks (`mlpsyn.segmentation`).
+**Prerequisites.** Scenes plus pixel-aligned semantic masks (`mplsyn.segmentation`).
 
 **By the end you can:**
 - build paired **(image, semantic-mask)** data, with masks that are pixel-aligned
@@ -84,8 +82,7 @@ model and diagnose its per-class behaviour.
 
 **Role.** A focused binary-segmentation task on the atmosphere itself.
 
-**Prerequisites.** Cloud fields and occlusion masks (`mlpsyn.sensor.clouds`),
-plus the segmentation ideas from 06.
+**Prerequisites.** Semantic segmentation with U-Nets.
 
 **By the end you can:**
 - simulate cloud occlusion as a soft field, including a mix of opaque cores and

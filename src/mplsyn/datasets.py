@@ -2,7 +2,7 @@
 
 The datasets here are **numpy-only**: they render scenes, apply sensor effects,
 build labels/masks and return plain arrays. The modeling notebooks wrap the
-arrays in torch tensors, so this module (and `import mlpsyn`) stays free of a
+arrays in torch tensors, so this module (and `import mplsyn`) stays free of a
 PyTorch dependency. Anchors use scikit-learn, imported lazily.
 """
 
@@ -11,10 +11,10 @@ from __future__ import annotations
 import numpy as np
 from matplotlib.path import Path
 
-from mlpsyn.materials import MATERIALS
-from mlpsyn.scene import SCENES, generate_scene
-from mlpsyn.segmentation import semantic_mask
-from mlpsyn.sensor import apply_sensor, clouds
+from mplsyn.materials import MATERIALS
+from mplsyn.scene import SCENES, generate_scene
+from mplsyn.segmentation import semantic_mask
+from mplsyn.sensor import apply_sensor, clouds
 
 __all__ = [
     "CLASSIFICATION_CLASSES",

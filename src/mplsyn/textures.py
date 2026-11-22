@@ -1,6 +1,6 @@
 """Texture generation from simple matplotlib drawing primitives.
 
-This is the foundational layer of :mod:`mlpsyn`: it renders abstract textures
+This is the foundational layer of :mod:`mplsyn`: it renders abstract textures
 without any domain semantics. Scenes are deterministic given a seed.
 """
 

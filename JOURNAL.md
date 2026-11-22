@@ -3,6 +3,18 @@
 Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
+### 2026-09-24 21:40 — Rename mlpsyn -> mplsyn
+
+- Renamed the package directory `src/mlpsyn` -> `src/mplsyn` and updated
+  `pyproject.toml` (project name, hatch wheel packages, pixi editable dependency).
+- Replaced every `mlpsyn` reference in code, tests, notebooks, README, ROADMAP,
+  VISUAL_QA and LEARNING_OBJECTIVES with `mplsyn`; notebook sources were edited
+  via nbformat (cell sources only).
+- Updated the pixi lock (`pixi lock`) and the editable-install artifacts in the
+  dev env. `import mplsyn` works and the full test suite passes (180 tests).
+- Re-ran all eight notebooks to confirm they execute with the renamed package.
+- (Historical JOURNAL entries above still mention the old name.)
+
 ### 2026-09-24 21:10 — Extract dataset generation into mlpsyn.datasets
 
 - Added `src/mlpsyn/datasets.py`: a numpy-only module with the reusable builders

@@ -2,13 +2,13 @@ import numpy as np
 import pytest
 from matplotlib.figure import Figure
 
-from mlpsyn.materials import (
+from mplsyn.materials import (
     MATERIALS,
     fill_patch,
     generate_material,
     material_textures,
 )
-from mlpsyn.textures import ShapeBudget
+from mplsyn.textures import ShapeBudget
 
 
 def test_material_registry():

@@ -2,8 +2,8 @@
 
 A scene is assembled in two layers:
 
-1. a **material** texture used as ground (see :mod:`mlpsyn.materials`);
-2. semantic objects drawn on top (see :mod:`mlpsyn.object`), themselves filled
+1. a **material** texture used as ground (see :mod:`mplsyn.materials`);
+2. semantic objects drawn on top (see :mod:`mplsyn.object`), themselves filled
    with materials.
 
 Three environments are provided: ``urban``, ``forest`` and ``fields``. Layouts
@@ -26,9 +26,9 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 from matplotlib.path import Path
 
-from mlpsyn._mode import MASK_MODE, mask_mode
-from mlpsyn.materials import fill_patch, material_textures
-from mlpsyn.object import (
+from mplsyn._mode import MASK_MODE, mask_mode
+from mplsyn.materials import fill_patch, material_textures
+from mplsyn.object import (
     OBJECTS,
     _ribbon,
     draw_building,
@@ -37,7 +37,7 @@ from mlpsyn.object import (
     draw_river,
     draw_road,
 )
-from mlpsyn.textures import _DPI, MAX_SHAPES, ShapeBudget, _blob, _jitter
+from mplsyn.textures import _DPI, MAX_SHAPES, ShapeBudget, _blob, _jitter
 
 __all__ = [
     "SCENES",
@@ -161,7 +161,7 @@ def _road_clearance(point, corridors):
 def _compose(name, size, seed, background_key, drawer, needed_materials):
     """Render a scene: material ground, then the drawer's objects, then masks."""
     if mask_mode():
-        from mlpsyn.segmentation import CLASS_COLORS, MATERIAL_SEG_CLASS
+        from mplsyn.segmentation import CLASS_COLORS, MATERIAL_SEG_CLASS
 
         materials = {
             key: np.full(
@@ -2091,7 +2091,7 @@ def generate_scene(
     """Render a named scene from :data:`SCENES`.
 
     With ``mask=True`` the scene is drawn with flat semantic-class colours
-    instead of materials, for :mod:`mlpsyn.segmentation`.
+    instead of materials, for :mod:`mplsyn.segmentation`.
     """
     try:
         generator = SCENES[name]

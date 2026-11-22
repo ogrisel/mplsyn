@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from mlpsyn.datasets import (
+from mplsyn.datasets import (
     CLASSIFICATION_CLASSES,
     blend_two_scenes,
     encode_targets,
@@ -67,7 +67,7 @@ def test_shape_iou_and_anchors():
 
 
 def test_encode_targets_skips_degenerate_boxes():
-    from mlpsyn.scene import SceneObject
+    from mplsyn.scene import SceneObject
 
     objects = [SceneObject("building", (0.1, 0.1, 0.3, 0.3)),
                SceneObject("rock", (0.5, 0.5, 0.5, 0.5))]  # zero-size

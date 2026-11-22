@@ -10,9 +10,9 @@ materials and objects.
 
 Levels under review:
 
-- **L1 materials** (`mlpsyn.materials`) — low-level surfaces
-- **L2 objects** (`mlpsyn.object`) — geometry filled with materials
-- **L3 scenes** (`mlpsyn.scene`) — material ground + objects
+- **L1 materials** (`mplsyn.materials`) — low-level surfaces
+- **L2 objects** (`mplsyn.object`) — geometry filled with materials
+- **L3 scenes** (`mplsyn.scene`) — material ground + objects
 
 ## Overall verdict
 
@@ -474,7 +474,7 @@ sensor realism.
 
 ### R5-1 — sensor and atmospheric effects
 
-New `mlpsyn.sensor` module applied to the final image; the scenes notebook
+New `mplsyn.sensor` module applied to the final image; the scenes notebook
 renders an 8-effect × 5-seed grid (`EFFECTS`).
 
 **Looks good**: every effect runs, is deterministic per seed and composable via
@@ -490,7 +490,7 @@ default radius is fairly strong (low).
 
 | Iter | Item | Status | Result |
 |---|---|---|---|
-| 1 | Sensor + atmosphere module | done | `mlpsyn.sensor` (gaussian, poisson, blur, haze, clouds, `apply_sensor`, `EFFECTS`); vignette/JPEG removed as camera artefacts. |
+| 1 | Sensor + atmosphere module | done | `mplsyn.sensor` (gaussian, poisson, blur, haze, clouds, `apply_sensor`, `EFFECTS`); vignette/JPEG removed as camera artefacts. |
 | 2 | New objects | done | silo, pool, truck, hedgerow (+ boat for the coast); integrated into scenes. |
 | 3 | New materials | done | gravel, mud (14 materials total). |
 | 4 | New scenes | done | coastal, mountain, arid, forest_fields, urban_fringe (8 scene types). |
@@ -590,7 +590,7 @@ User-requested realism items; see the Round 7 plan in `ROADMAP.md`.
 | R7-6 | Contour-following / gentle-grade roads | realism | **Done** |
 | R7-7 | Orchard and greenhouse vocabulary | vocabulary | **Done** |
 | R5-12 | Annotation export (COCO/YOLO) + train/val split | tooling | **Done** |
-| R7-8 | Automatic diversity metrics (`mlpsyn.metrics`) | tooling | **Done** |
+| R7-8 | Automatic diversity metrics (`mplsyn.metrics`) | tooling | **Done** |
 | R5-13 | Pixel-level segmentation masks | tooling | pending |
 
 ### Round 7 progress
@@ -603,8 +603,8 @@ User-requested realism items; see the Round 7 plan in `ROADMAP.md`.
 | 18 | R7-4/R7-5 elevation map | done | `_terrain(rng) -> (height, slope, hillshade)` with a fixed upper-left light; `_relief_overlay` and `_low_valley_path`. Mountain snow/rocks/water, fields crop/woodland/fallow, and forest/wilderness/pasture/fields relief all derive from the same per-seed map. |
 | 19 | R7-6 gentle-grade roads | done | `_spanning_tree` accepts a `weight`; the field and boundary mosaics build a minimum spanning tree weighted by boundary height difference. Forest and pasture tracks use `_gentle_path` (lowest-slope of several candidate meanders). New test covers weighted MST, `_terrain`, `_low_valley_path` and `_gentle_path`. |
 | 20 | R7-7 orchard + greenhouse | done | New `draw_orchard` (grid of small trees on a soil block) and `draw_greenhouse` (row of pale polytunnels); registered in `OBJECTS`. Every `fields` scene now has one orchard on its flattest cell; `pasture` sometimes gets greenhouses. Tests parametrised over `OBJECTS` now cover both (142 pass). |
-| 21 | R5-12 COCO/YOLO export + split | done | New `mlpsyn.annotations`: `category_index`, `yolo_lines`, `scene_to_coco`, `coco_dataset` (pixel top-left boxes) and `train_val_test_split` (deterministic). Shown in nb03; 7 new tests (149 pass). |
-| 22 | R7-8 diversity metrics | done | New `mlpsyn.metrics`: `label_histogram`, `objects_per_scene`, `spatial_coverage`, `diversity_report`. nb04 prints a 30-scene report (16 labels present, entropy 1.8, spatial coverage 0.71); 4 new tests (153 pass). |
+| 21 | R5-12 COCO/YOLO export + split | done | New `mplsyn.annotations`: `category_index`, `yolo_lines`, `scene_to_coco`, `coco_dataset` (pixel top-left boxes) and `train_val_test_split` (deterministic). Shown in nb03; 7 new tests (149 pass). |
+| 22 | R7-8 diversity metrics | done | New `mplsyn.metrics`: `label_histogram`, `objects_per_scene`, `spatial_coverage`, `diversity_report`. nb04 prints a 30-scene report (16 labels present, entropy 1.8, spatial coverage 0.71); 4 new tests (153 pass). |
 
 ### Round 7 inspection notes
 
@@ -650,7 +650,7 @@ User-requested follow-up.
 | Iter | Item | Status | Result |
 |---|---|---|---|
 | 23 | R8-1 close the road network | done | `_close_network` raises every degree-1 cell to degree >= 2 where an unused edge exists; fields/boundary roads no longer dead-end mid-field. Test added. |
-| 24 | R8-2 semantic segmentation | done | `mlpsyn._mode` mask flag; `_compose` renders flat class colours in mask mode; `mlpsyn.segmentation` maps pixels to 13 classes (0 = unlabeled). `semantic_mask(name, size, seed)`. 5 tests. |
+| 24 | R8-2 semantic segmentation | done | `mplsyn._mode` mask flag; `_compose` renders flat class colours in mask mode; `mplsyn.segmentation` maps pixels to 13 classes (0 = unlabeled). `semantic_mask(name, size, seed)`. 5 tests. |
 | 25 | R8-3 cloud mask | done | `cloud_alpha` + `clouds(..., return_mask=True)` expose the occlusion field. Test added. |
 | 26 | R8-4 notebook section | done | nb04: 4-row figure (original, +boxes, semantic labels, cloud mask) for 5 scenes; pixel-aligned. |
 | 27 | R8-5 training notebooks | done | see metrics below. |
