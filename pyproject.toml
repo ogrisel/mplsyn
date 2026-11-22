@@ -39,7 +39,7 @@ lint = "ruff check ."
 format = "ruff format ."
 lab = "jupyter lab notebooks"
 stage-datasets = "python -m mplsyn.stage_datasets staging"
-install-torch = "python -m pip install torch"
+install-torch = "python -m pip install torch torchinfo"
 install-sklearn = "python -m pip install scikit-learn"
 
 [tool.pixi.dependencies]

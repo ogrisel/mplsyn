@@ -1089,3 +1089,47 @@ satellite background alignment).
 - **Verified**: rotation demo at 0/20/55° — fill, outline and bbox now coincide.
 - **Housekeeping**: 96 tests pass, ruff clean, all three notebooks re-executed,
   the nb02 rotation/coverage analyses updated, `VISUAL_QA.md` backlog updated.
+
+## 2026-11-22 19:31 — Maths review of the modeling notebooks
+
+- **Scope**: notation and correctness review of the formulas in notebooks 05-08
+  (plus the diversity metrics of dataset_qa/04); formulas are now recalled where
+  the quantity is used (softmax, cross-entropy, weighted CE, BCE, IoU/Dice,
+  precision/recall, ECE, temperature scaling, shape IoU, target encoding and
+  decoding, Smooth-L1, mAP, mask BCE + soft Dice, count MAE/MAPE, ceiling accuracy
+  of the noisy labels, sample std over seeds). One notation block per notebook
+  (`B`, `C`, `S`, `A`, `P`, `N`, `\sigma`, `\mathbf 1[\cdot]`).
+- **Bugs found and fixed**:
+  - 08: boxes were trained on raw `t_x, t_y` but decoded through a sigmoid;
+    decoding is now raw in `decode_predictions` and `decode_anchor`. Test mAP@0.5
+    0.417 -> 0.566, forest test count MAE 2.80 -> 1.27, instance IoU 0.572 -> 0.722,
+    detection rate 454/654 -> 624/654.
+  - 08: class-loss formula was normalised by `P` instead of `P*C`; the toy
+    "manual BCE" omitted `pos_weight` (0.049 vs 0.052, now equal); "at most 16
+    objects" -> 24; `mplsyn.metrics` cited for AP (it is the notebook function).
+  - 07: text said the best-IoU checkpoint is kept but the final epoch was used
+    (unstable after the torch 2.15 upgrade: IoU 0.673). Now validates every epoch
+    and restores the best checkpoint (val IoU 0.824, test 0.804). ECE last bin is
+    closed on the right. Wording on calibration fixed (fitted `T = 0.3 < 1` means
+    under-confident, not over-confident).
+  - 05: `np.std` -> sample std (`ddof=1`) for the 3-seed spread; added the label
+    noise accuracy ceiling `(1-m) + m*c = 0.825`.
+  - 06: mIoU text corrected (classes with non-empty union; IoU pools unlabeled
+    pixels, unlike loss/accuracy); weighted-CE formula; baseline wording.
+- **Stale text updated** from the new outputs (08 read-outs, 07 ~79 % baseline).
+- **Open point**: 06 IoU counts predictions on unlabeled pixels as false positives;
+  restricting IoU to labelled pixels would be more standard (not changed here).
+
+## 2026-11-22 21:20 — IoU on labelled pixels (06)
+
+- **Change**: the per-class IoU in notebook 06 (toy example, `evaluate`,
+  `per_class_iou`) now ignores unlabeled pixels (class 0), as the loss and the
+  pixel accuracy already did. A prediction on an unlabeled pixel no longer counts
+  as a false positive. The maths block and the key-terms text say so.
+- **Checkpoint fix**: the text promised the checkpoint with the best validation
+  mIoU, but the loop kept the last epoch. It now validates every epoch and
+  restores the best checkpoint (validation mIoU 0.494).
+- **Results (re-executed)**: validation mIoU 0.492 -> 0.494, test mIoU 0.499 ->
+  0.501 (pixel accuracy 0.801 unchanged); plain vs class-weighted CE mIoU
+  0.342/0.449 -> 0.343/0.451. The read-outs still hold.
+- This closes the open point of the previous maths-review entry.

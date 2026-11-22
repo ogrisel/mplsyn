@@ -60,11 +60,12 @@ synthetic dataset (one notebook per level):
 What the **modeling** notebooks teach (objectives, exercises and prerequisites)
 is collected in [`LEARNING_OBJECTIVES.md`](LEARNING_OBJECTIVES.md).
 
-The modeling notebooks need PyTorch and scikit-learn, which are installed with
+The modeling notebooks need PyTorch (plus `torchinfo` for the model summaries) and
+scikit-learn, which are installed with
 pip (no cp314 conda wheels) into the dev environment:
 
 ```bash
-pixi run -e dev install-torch      # PyTorch (auto device: CUDA/MPS/XPU/CPU)
+pixi run -e dev install-torch      # PyTorch + torchinfo (auto device: CUDA/MPS/XPU/CPU)
 pixi run -e dev install-sklearn    # scikit-learn (anchor k-means)
 ```
 
