@@ -1133,3 +1133,26 @@ satellite background alignment).
   0.501 (pixel accuracy 0.801 unchanged); plain vs class-weighted CE mIoU
   0.342/0.449 -> 0.343/0.451. The read-outs still hold.
 - This closes the open point of the previous maths-review entry.
+
+## 2026-11-22 22:00 — Split notebook 08 into detection (08) and instance segmentation (09)
+
+- **Change**: `08_train_object_detection` keeps the urban/coastal anchor detector
+  (41 cells); the new `09_train_instance_segmentation` holds the per-anchor mask
+  head on forests (27 cells). Each has its own intro, objectives, exercises, key
+  terms, Colab install cells, setup cell and "Interpreting these numbers".
+- **Self-contained maths in 09**: a recap cell restates the anchor encoding and
+  decoding (shape IoU, `t_x, t_y, t_w, t_h`, raw regression) with the notebook's
+  own notation (`S=16`, `A=3`), and the loss cell now writes the objectness and
+  Smooth-L1 terms explicitly instead of pointing to the detection section.
+  `box_iou` and the `torchinfo` / `kmeans_anchors` imports are local to 09.
+- **Text fixed on the way**: 08's resolution read-out said halving the resolution
+  quarters a car's pixel area, but 96 -> 64 px divides it by 2.25; 09 no longer
+  claims cloud cover for forests (the forest generator only adds noise and blur).
+  08's exercise on `decode_anchor` became one on `decode_predictions`.
+- **Results (re-executed)**: 08 is unchanged (val/test mAP@0.5 0.525 / 0.566).
+  09 now starts from a fresh random state instead of the one left by the detector
+  training: test count MAE 0.80 (MAPE 6 %), instance IoU 0.733, detection 624/654
+  (before the split: 1.27 / 0.722 / 624/654); the error now grows monotonically
+  with canopy density, and the read-out was updated.
+- **Docs**: README (list + results table refreshed with the current numbers),
+  `LEARNING_OBJECTIVES.md` (08 and 09 sections), `ROADMAP.md` (Round 46).

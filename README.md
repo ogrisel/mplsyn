@@ -55,7 +55,8 @@ synthetic dataset (one notebook per level):
 - [`05_train_scene_classification.ipynb`](notebooks/modeling/05_train_scene_classification.ipynb) — image-level scene labels
 - [`06_train_semantic_segmentation.ipynb`](notebooks/modeling/06_train_semantic_segmentation.ipynb) — per-pixel class masks
 - [`07_train_cloud_occlusion.ipynb`](notebooks/modeling/07_train_cloud_occlusion.ipynb) — cloud occlusion masks
-- [`08_train_object_detection.ipynb`](notebooks/modeling/08_train_object_detection.ipynb) — anchor detection + tree instance segmentation
+- [`08_train_object_detection.ipynb`](notebooks/modeling/08_train_object_detection.ipynb) — anchor-based object detection in urban scenes
+- [`09_train_instance_segmentation.ipynb`](notebooks/modeling/09_train_instance_segmentation.ipynb) — tree counting and instance segmentation in forests (mask head per anchor)
 
 What the **modeling** notebooks teach (objectives, exercises and prerequisites)
 is collected in [`LEARNING_OBJECTIVES.md`](LEARNING_OBJECTIVES.md).
@@ -91,11 +92,11 @@ close, so the models are not tuned to validation).
 
 | notebook | task (64 px unless noted) | metric | validation | test |
 |---|---|---|---|---|
-| 05 | scene classification (7 classes, 50 % ambiguous mixtures) | accuracy | 0.80 | 0.71 |
-| 06 | semantic segmentation (12 classes) | pixel acc / mIoU | 0.79 / 0.50 | 0.80 / 0.51 |
-| 07 | cloud occlusion | IoU / Dice | 0.84 / 0.91 | 0.85 / 0.92 |
-| 08 | object detection @96 px (6 classes) | mAP@0.5 | 0.41 | 0.39 |
-| 08 | tree instance masks (per-anchor head) | instance IoU / count MAE (MAPE) | 0.56 / 3.1 (19 %) | 0.56 / 3.1 (22 %) |
+| 05 | scene classification (7 classes, 50 % ambiguous mixtures) | accuracy | 0.79 | 0.74 |
+| 06 | semantic segmentation (12 classes) | pixel acc / mIoU | 0.78 / 0.49 | 0.80 / 0.50 |
+| 07 | cloud occlusion | IoU / Dice | 0.82 / 0.90 | 0.80 / 0.89 |
+| 08 | object detection @96 px (6 classes) | mAP@0.5 | 0.53 | 0.57 |
+| 09 | tree instance masks (per-anchor head) | instance IoU / count MAE (MAPE) | 0.72 / 0.9 (5 %) | 0.73 / 0.8 (6 %) |
 
 All tasks run on **light sensor noise with ~20 % partial cloud cover**, so the
 scores are deliberately below a clean-data benchmark. That is the lesson, spelled

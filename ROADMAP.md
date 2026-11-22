@@ -768,3 +768,11 @@ classification mixtures + splits, segmentation pairs, cloud pairs, detection
 images + objects, anchors/encoding, and forest instances. Notebooks 05-08 import
 them and keep only training/evaluation code. Behaviour is unchanged (metrics
 verified identical) and `tests/test_datasets.py` covers the module.
+
+## Round 46 — detection and instance segmentation split
+
+Notebook 08 (about 60 cells, two models) is split in two: `08_train_object_detection`
+keeps the anchor detector on urban scenes, and the new
+`09_train_instance_segmentation` holds the per-anchor mask head on forests (it
+recalls the anchor encoding and loss terms instead of referring to cells of 08).
+This resolves the earlier "split 08" item.

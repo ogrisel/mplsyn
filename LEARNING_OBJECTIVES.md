@@ -16,7 +16,8 @@ the test metric once.
 | 05 | `05_train_scene_classification` | image classification | scene data | train a CNN; read a confusion matrix honestly |
 | 06 | `06_train_semantic_segmentation` | per-pixel classification | scene + mask data | train a U-Net; read IoU / mIoU and per-class errors |
 | 07 | `07_train_cloud_occlusion` | binary segmentation | cloud masks | read IoU / Dice, operating points and calibration |
-| 08 | `08_train_object_detection` | detection + instances | object annotations | train a detector + mask head; read mAP, PR, error causes |
+| 08 | `08_train_object_detection` | object detection | object annotations | train an anchor detector; read mAP, PR, error causes |
+| 09 | `09_train_instance_segmentation` | instance segmentation | 08 + forest instances | add a mask head per anchor; read instance IoU and count error |
 
 ---
 
@@ -108,13 +109,12 @@ probability calibration for a binary mask.
 
 ---
 
-## 08 — Object detection and instance segmentation
+## 08 — Object detection (urban scenes)
 
-**Role.** The capstone: localise *and* classify objects, then separate
-overlapping instances.
+**Role.** Localise *and* classify objects: an anchor-based, YOLO-style detector.
 
-**Prerequisites.** Object boxes and instance masks (generator notebooks 02-03),
-plus the segmentation ideas from 06.
+**Prerequisites.** Object boxes (generator notebooks 02-03), plus the
+classification and segmentation ideas from 05-06.
 
 **By the end you can:**
 - encode objects as **anchor-based detection targets** (objectness, one-hot
@@ -130,22 +130,48 @@ plus the segmentation ideas from 06.
 - explain the detector's **error taxonomy** (localisation vs background vs
   duplicate vs class confusion) and read the **resolution ablation** (96 px vs
   64 px);
-- extend the detector with a **per-anchor mask head** (box-relative,
-  crop-and-resize target) and evaluate instance masks with **IoU** and
-  **count MAE / MAPE**, stratified by canopy density;
-- separate unavoidable limits (a ~4 px car, a fully occluded crown) from things a
-  model change could fix.
+- separate unavoidable limits (a ~4 px car) from things a model change could fix.
 
 **Key concepts:** anchors, objectness, box encoding/decoding, NMS, AP / mAP,
-precision-recall, localization quality, box-relative masks, count error,
-resolution ceiling, error taxonomy.
+precision-recall, localization quality, resolution ceiling, error taxonomy.
 
-**Exercises.** Vary the NMS threshold; lower the score threshold and watch count
-vs IoU; raise `MASK_SIZE` and weigh the accuracy gain against cost.
+**Exercises.** Vary the NMS threshold; raise the score threshold and watch
+precision, recall and mAP; explain why the 64 px run loses the small classes.
 
-**After this notebook:** you can build a small detector + instance head, and you
-know how to read mAP, PR curves, calibration and error breakdowns rather than a
-single number.
+**After this notebook:** you can build a small detector and you know how to read
+mAP, PR curves and error breakdowns rather than a single number.
+
+---
+
+## 09 — Instance segmentation (trees in forests)
+
+**Role.** Separate overlapping instances: count trees and segment each crown by
+extending the detector of 08 with a mask head per anchor.
+
+**Prerequisites.** Notebook 08 (anchor targets, objectness and box losses, NMS)
+and the segmentation ideas from 06-07 (IoU, Dice).
+
+**By the end you can:**
+- recall the **anchor target encoding** and why box offsets are regressed directly;
+- extend the detector with a **per-anchor mask head** (box-relative,
+  crop-and-resize target) and train it with **objectness + box + mask BCE +
+  soft Dice**;
+- evaluate instance masks with **instance IoU**, **detection rate** and
+  **count MAE / MAPE** against a mean-count baseline, stratified by canopy
+  density;
+- read **torchinfo** to see that the mask head dominates both the outputs and
+  the parameters;
+- separate unavoidable limits (a fully occluded crown) from things a model change
+  could fix.
+
+**Key concepts:** box-relative masks, mask head per anchor, soft Dice, instance
+IoU, detection rate, count error, density stratification.
+
+**Exercises.** Explain why Dice complements BCE; lower the score threshold and
+watch count vs IoU; raise `MASK_SIZE` and weigh the accuracy gain against cost.
+
+**After this notebook:** you can build a small instance-segmentation model and
+read count and mask quality separately.
 
 ---
 
@@ -153,8 +179,8 @@ single number.
 
 ### Strengths
 
-- **Four tasks of increasing structure** (classification -> segmentation ->
-  binary mask -> detection + instances), each with a clear objective, exercises
+- **Five tasks of increasing structure** (classification -> segmentation ->
+  binary mask -> detection -> instances), each with a clear objective, exercises
   and self-check notes.
 - **A read-out sits directly below every figure**, and each figure is designed to
   teach a specific idea (curves, confusion matrix + class histogram, PR curves,
@@ -170,13 +196,12 @@ single number.
 
 ### Gaps and recommendations
 
-1. **Add a short "contents / how to skim" box to 08** (~50 cells, 4-5 min).
-2. **Deepen the "why" notes in 07** (Dice vs IoU; temperature scaling leaves the
+1. **Deepen the "why" notes in 07** (Dice vs IoU; temperature scaling leaves the
    argmax unchanged).
-3. **Add prerequisites and a rough time budget** to each modeling notebook.
-4. **A cross-notebook learning path** in the README (this file provides the
-   content) so a reader knows 05 -> 06 -> 07 -> 08 builds up.
-5. **Consider a small "common pitfalls" box per notebook** (e.g. evaluating on
+2. **Add prerequisites and a rough time budget** to each modeling notebook.
+3. **A cross-notebook learning path** in the README (this file provides the
+   content) so a reader knows 05 -> 06 -> 07 -> 08 -> 09 builds up.
+4. **Consider a small "common pitfalls" box per notebook** (e.g. evaluating on
    the test set, comparing across seeds, reading mAP without PR curves).
-6. **For 08, a dedicated vehicle/bus class** (or a truck/bus breakdown) would let
+5. **For 08, a dedicated vehicle/bus class** (or a truck/bus breakdown) would let
    learners measure the new vehicles rather than folding them into `car`.
