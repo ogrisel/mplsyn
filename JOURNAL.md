@@ -3,6 +3,12 @@
 Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
+### 2026-09-24 22:00 — BSD 3-Clause license
+
+- Added `LICENSE` (BSD 3-Clause, Copyright 2026 Olivier Grisel) and referenced it
+  from `[project]` metadata via `license = { file = "LICENSE" }` plus the
+  "BSD License" classifier; added a License section to the README.
+
 ### 2026-09-24 21:40 — Rename mlpsyn -> mplsyn
 
 - Renamed the package directory `src/mlpsyn` -> `src/mplsyn` and updated

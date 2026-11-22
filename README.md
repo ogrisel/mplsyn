@@ -137,3 +137,7 @@ scene.image.shape       # (600, 600, 3)
 scene.labels()          # ['building', 'tree', 'car', ...]
 scene.objects[0].bbox   # normalised (x0, y0, x1, y1)
 ```
+
+## License
+
+Released under the **BSD 3-Clause License** — see [`LICENSE`](LICENSE).
