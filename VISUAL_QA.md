@@ -31,7 +31,7 @@ Levels under review:
 ## Round 2 — scene diversity and realism
 
 Second inspection pass, again starting from the images embedded in
-`notebooks/03_scene_generation.ipynb` (3 scenes × seeds 0/1/2), then the object
+`notebooks/dataset_qa/03_scene_generation.ipynb` (3 scenes × seeds 0/1/2), then the object
 and material notebooks.
 
 ### Findings from notebook 03 (scenes)
@@ -495,7 +495,7 @@ default radius is fairly strong (low).
 | 3 | New materials | done | gravel, mud (14 materials total). |
 | 4 | New scenes | done | coastal, mountain, arid, forest_fields, urban_fringe (8 scene types). |
 | 5 | 10-seed grids + size checks | done | all coverage grids use 10 seeds; `check_figure_size` prints and asserts <5 MB. Scene coverage grid 1.10 MB, sensor 0.65 MB, random scenes 1.39 MB. |
-| 6 | Diversity notebook | done | `notebooks/04_scene_diversity.ipynb`: 25 random scenes, mixed noise/haze, 7/25 cloudy (72 % clear). |
+| 6 | Diversity notebook | done | `notebooks/dataset_qa/04_scene_diversity.ipynb`: 25 random scenes, mixed noise/haze, 7/25 cloudy (72 % clear). |
 | 7 | Roadmap | done | new milestone 9 (Visual QA & diversity) and updated satellite/objects/materials lists. |
 | 8 | R5-8 soft/organic region boundaries | done | New `_organic_edge` (extra smoothed high-frequency wobble) and `_soft_edge` (three nested, increasingly wide bands of the region material drawn on the neighbour side with alpha 0.45/0.25/0.10, sharing one wobble field so they nest). Applied to both `forest_fields` (soil↔grass) and `urban_fringe` (concrete↔grass). Inspection: the hard line is replaced by a mottled transition; no contour banding. 125 tests pass, ruff clean (src/tests); all four notebooks re-executed. |
 | 9 | R5-9 mountain elevation shading | done | Replaced the faint ridge-line polygons with `_elevation_field` + `_hillshade`: a smooth random height field (summed sinusoids + Gaussian hills) shaded by a Lambertian light, overlaid as a translucent white/black RGBA image. The 10-seed grid now reads as ridges/valleys rather than a flat plateau; shading is per-seed (light azimuth varies). 125 tests pass; notebooks re-executed. |

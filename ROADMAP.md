@@ -111,7 +111,7 @@ Rendering quality is driven by an explicit visual-inspection loop.
       scenes) on grids (5 columns, per AGENTS); each grid must stay below 5 MB
       (checked in the notebooks via `check_figure_size`) and each cell must run
       in under 10 s.
-- [x] `notebooks/04_scene_diversity.ipynb`: 25 random scene types with mixed
+- [x] `notebooks/dataset_qa/04_scene_diversity.ipynb`: 25 random scene types with mixed
       sensor noise, haze and variable cloud cover (>= 70 % clear) to assess
       composition diversity across seeds.
 - [x] Automatic diversity metrics (`mlpsyn.metrics`: label histogram, object
@@ -752,3 +752,10 @@ follow-ups, in priority order:
 5. **Add a "when does this look wrong?" failure gallery** to the generator
    notebooks (overlapping conifers, clipped shadows, ...).
 6. **Add prerequisites and a rough time budget** to each notebook.
+
+## Round 44 — notebook split
+
+Notebooks are split by purpose: `notebooks/dataset_qa/` holds the generator and
+inspection notebooks (01-04) and `notebooks/modeling/` holds the training/
+evaluation notebooks (05-08). Filenames are unchanged; all documentation links
+were updated.

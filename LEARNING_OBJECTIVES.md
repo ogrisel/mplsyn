@@ -3,7 +3,8 @@
 What each notebook teaches, in the order they are meant to be read. The first
 four build the synthetic-data generator bottom-up (materials -> objects ->
 scenes -> sampling/degradation); the last four train and evaluate models on
-that data.
+that data. They live in `notebooks/dataset_qa/` (01-04) and
+`notebooks/modeling/` (05-08).
 
 ## Learning path at a glance
 

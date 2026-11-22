@@ -34,24 +34,28 @@ pixi run -e dev lab        # launch JupyterLab on the notebooks
 4. **scenes** (`mlpsyn.scene`) — a material ground populated with
    material-filled objects, plus object-level bounding-box annotations.
 
-See [`notebooks/`](notebooks/) for one notebook per level:
+Notebooks are split into two folders:
 
-- [`01_texture_generation.ipynb`](notebooks/01_texture_generation.ipynb) — materials
-- [`02_object_generation.ipynb`](notebooks/02_object_generation.ipynb) — objects
-- [`03_scene_generation.ipynb`](notebooks/03_scene_generation.ipynb) — scenes
-- [`04_scene_diversity.ipynb`](notebooks/04_scene_diversity.ipynb) — scene sampling + annotations
+**[`notebooks/dataset_qa/`](notebooks/dataset_qa/)** — building and inspecting the
+synthetic dataset (one notebook per level):
+
+- [`01_texture_generation.ipynb`](notebooks/dataset_qa/01_texture_generation.ipynb) — materials
+- [`02_object_generation.ipynb`](notebooks/dataset_qa/02_object_generation.ipynb) — objects
+- [`03_scene_generation.ipynb`](notebooks/dataset_qa/03_scene_generation.ipynb) — scenes
+- [`04_scene_diversity.ipynb`](notebooks/dataset_qa/04_scene_diversity.ipynb) — scene sampling + annotations
+
+**[`notebooks/modeling/`](notebooks/modeling/)** — training and evaluating models
+(PyTorch; runs on CUDA / MPS / XPU / CPU):
+
+- [`05_train_scene_classification.ipynb`](notebooks/modeling/05_train_scene_classification.ipynb) — image-level scene labels
+- [`06_train_semantic_segmentation.ipynb`](notebooks/modeling/06_train_semantic_segmentation.ipynb) — per-pixel class masks
+- [`07_train_cloud_occlusion.ipynb`](notebooks/modeling/07_train_cloud_occlusion.ipynb) — cloud occlusion masks
+- [`08_train_object_detection.ipynb`](notebooks/modeling/08_train_object_detection.ipynb) — anchor detection + tree instance segmentation
 
 What each notebook teaches (objectives, exercises and prerequisites) is
 collected in [`LEARNING_OBJECTIVES.md`](LEARNING_OBJECTIVES.md).
 
-Training notebooks (PyTorch; runs on CUDA / MPS / XPU / CPU):
-
-- [`05_train_scene_classification.ipynb`](notebooks/05_train_scene_classification.ipynb) — image-level scene labels
-- [`06_train_semantic_segmentation.ipynb`](notebooks/06_train_semantic_segmentation.ipynb) — per-pixel class masks
-- [`07_train_cloud_occlusion.ipynb`](notebooks/07_train_cloud_occlusion.ipynb) — cloud occlusion masks
-- [`08_train_object_detection.ipynb`](notebooks/08_train_object_detection.ipynb) — anchor detection + tree instance segmentation
-
-The training notebooks need PyTorch and scikit-learn, which are installed with
+The modeling notebooks need PyTorch and scikit-learn, which are installed with
 pip (no cp314 conda wheels) into the dev environment:
 
 ```bash

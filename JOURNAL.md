@@ -3,6 +3,15 @@
 Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
+### 2026-09-24 20:30 — Split notebooks into dataset_qa/ and modeling/
+
+- Moved the four generator/QA notebooks (01-04) to `notebooks/dataset_qa/`
+  and the four model notebooks (05-08) to `notebooks/modeling/` (filenames
+  unchanged).
+- Updated every path reference: README notebook index, ROADMAP, VISUAL_QA, and
+  a note in LEARNING_OBJECTIVES.md.
+- Smoke-tested execution from the new location (notebook 01 re-ran cleanly).
+
 ### 2026-09-24 20:00 — Educational review + LEARNING_OBJECTIVES.md
 
 - Reviewed the educational value of all eight notebooks: the bottom-up
