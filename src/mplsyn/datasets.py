@@ -8,11 +8,17 @@ PyTorch dependency. Anchors use scikit-learn, imported lazily.
 
 from __future__ import annotations
 
+import os
+import pathlib
+import tempfile
+import urllib.error
+import urllib.request
+
 import numpy as np
 from matplotlib.path import Path
 
 from mplsyn.materials import MATERIALS
-from mplsyn.scene import SCENES, generate_scene
+from mplsyn.scene import SCENES, SceneObject, generate_scene
 from mplsyn.segmentation import semantic_mask
 from mplsyn.sensor import apply_sensor, clouds
 
@@ -26,11 +32,20 @@ __all__ = [
     "DETECTION_LABEL_MAP",
     "DETECTION_MAX_OBJECTS",
     "DETECTION_SCENE_TYPES",
+    "DATASET_VERSION",
+    "DATA_HOME_ENV",
+    "DATA_URL_ENV",
     "blend_two_scenes",
+    "data_home",
     "degrade_image",
     "encode_targets",
     "forest_targets",
     "kmeans_anchors",
+    "load_classification_data",
+    "load_cloud_data",
+    "load_detection_data",
+    "load_forest_data",
+    "load_segmentation_data",
     "make_classification_data",
     "make_cloud_data",
     "make_detection_data",
@@ -445,3 +460,232 @@ def forest_targets(instance_map, anchors, grid):
             center_x * grid - col, (1 - center_y) * grid - row,
             np.log(width / anchors[anchor_idx][0]), np.log(height / anchors[anchor_idx][1])]
     return objectness, box_target, instance_id
+
+
+# ---------------------------------------------------------------------------
+# Cached / downloadable datasets
+# ---------------------------------------------------------------------------
+#
+# ``load_*_data`` take the same arguments and return the same values as the
+# matching ``make_*_data`` builder, but first look for a pregenerated ``.npz``
+# file named after the builder and its arguments:
+#
+# 1. in the local cache directory (``data_home()``);
+# 2. at ``$MPLSYN_DATA_URL/<file name>`` (e.g. a GitHub release download URL),
+#    downloaded into the cache;
+# 3. otherwise the dataset is generated and written to the cache, so the cost
+#    is paid at most once per machine and parameter set.
+#
+# Bump ``DATASET_VERSION`` whenever generation changes the content of a
+# dataset: it is part of every file name, so stale artifacts are never reused.
+
+#: Part of every artifact name; bump it when the generated content changes.
+DATASET_VERSION = "v1"
+#: Environment variable overriding the cache directory.
+DATA_HOME_ENV = "MPLSYN_DATA_HOME"
+#: Environment variable holding the base URL of pregenerated artifacts, e.g.
+#: ``https://github.com/<owner>/mplsyn/releases/download/datasets-v1``.
+DATA_URL_ENV = "MPLSYN_DATA_URL"
+#: Default base URL used when ``MPLSYN_DATA_URL`` is unset (None = generate).
+DEFAULT_DATA_URL = None
+
+
+def data_home():
+    """Cache directory for datasets (``$MPLSYN_DATA_HOME`` or ``~/.cache/mplsyn``)."""
+    configured = os.environ.get(DATA_HOME_ENV)
+    if configured:
+        return pathlib.Path(configured).expanduser()
+    cache_root = os.environ.get("XDG_CACHE_HOME") or pathlib.Path.home() / ".cache"
+    return pathlib.Path(cache_root) / "mplsyn"
+
+
+def _artifact_name(kind, **params):
+    """Deterministic, release-asset-safe name: ``segmentation-v1-n_samples360-size64-seed0.npz``."""
+    parts = "-".join(f"{key}{value}" for key, value in params.items())
+    return f"{kind}-{DATASET_VERSION}-{parts}.npz"
+
+
+def _download(url, destination):
+    """Download ``url`` to ``destination`` atomically; return False on any failure."""
+    temporary = None
+    try:
+        with urllib.request.urlopen(url, timeout=30) as response:
+            with tempfile.NamedTemporaryFile(
+                dir=destination.parent, suffix=".part", delete=False
+            ) as handle:
+                temporary = pathlib.Path(handle.name)
+                while chunk := response.read(1 << 20):
+                    handle.write(chunk)
+        temporary.replace(destination)
+        return True
+    except (urllib.error.URLError, OSError, ValueError):
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+        return False
+
+
+def _read_artifact(path):
+    """Read the arrays of an artifact (never unpickling); None if unreadable."""
+    try:
+        with np.load(path, allow_pickle=False) as archive:
+            return {key: archive[key] for key in archive.files}
+    except (OSError, ValueError, EOFError):
+        return None
+
+
+def _pack_tuple(result):
+    """Default packing: a tuple of arrays stored as ``a0, a1, ...``."""
+    return {f"a{i}": array for i, array in enumerate(result)}
+
+
+def _unpack_tuple(arrays):
+    """Inverse of :func:`_pack_tuple`."""
+    return tuple(arrays[f"a{i}"] for i in range(len(arrays)))
+
+
+def _images_to_uint8(images):
+    """Store float32 images in [0, 1] as uint8 (exact: they come from uint8 / 255)."""
+    return np.rint(np.asarray(images) * 255.0).astype(np.uint8)
+
+
+def _images_from_uint8(images, as_float32):
+    """Return stored uint8 images as is, or as float32 in [0, 1] if ``as_float32``."""
+    return images.astype(np.float32) / 255.0 if as_float32 else images
+
+
+def _pack_images_and_targets(result):
+    """Pack ``(float32 images, targets)`` with the images stored as uint8."""
+    images, targets = result
+    return {"images": _images_to_uint8(images), "targets": targets}
+
+
+def _unpack_images_and_targets(arrays, as_float32):
+    """Inverse of :func:`_pack_images_and_targets`."""
+    return _images_from_uint8(arrays["images"], as_float32), arrays["targets"]
+
+
+def _load_or_build(name, build, pack=_pack_tuple, unpack=_unpack_tuple):
+    """Return ``build()``'s result, from cache, download, or generation (in that order).
+
+    ``pack`` turns the result into a dict of arrays for storage and ``unpack``
+    rebuilds the returned value from such a dict. A freshly generated dataset
+    goes through ``unpack`` too, so every call returns the same thing.
+    """
+    path = data_home() / name
+    arrays = _read_artifact(path) if path.exists() else None
+    if arrays is None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        base_url = os.environ.get(DATA_URL_ENV) or DEFAULT_DATA_URL
+        if base_url and _download(f"{base_url.rstrip('/')}/{name}", path):
+            arrays = _read_artifact(path)
+            if arrays is None:  # corrupt download: fall back to generating
+                path.unlink(missing_ok=True)
+    if arrays is None:
+        arrays = pack(build())
+        temporary = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                dir=path.parent, suffix=".part", delete=False
+            ) as handle:
+                temporary = pathlib.Path(handle.name)
+                np.savez_compressed(handle, **arrays)
+            temporary.replace(path)
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+    return unpack(arrays)
+
+
+# Image arrays are stored as uint8 (4x smaller than float32). ``as_float32``
+# (default True) converts them on the fly to float32 in [0, 1], exactly what the
+# ``make_*`` builders return; pass ``as_float32=False`` to keep the raw uint8
+# ``(N, 3, H, W)`` array, e.g. to convert lazily batch by batch.
+
+
+def load_classification_data(
+    n_per_class, size=64, seed=0, mixture_fraction=0.5, mixture_confidence=0.65,
+    as_float32=True,
+):
+    """Cached :func:`make_classification_data`: ``(images, labels)``."""
+    name = _artifact_name(
+        "classification", n_per_class=n_per_class, size=size, seed=seed,
+        mixture_fraction=mixture_fraction, mixture_confidence=mixture_confidence,
+    )
+    return _load_or_build(
+        name,
+        lambda: make_classification_data(
+            n_per_class, size, seed, mixture_fraction, mixture_confidence),
+        pack=_pack_images_and_targets,
+        unpack=lambda arrays: _unpack_images_and_targets(arrays, as_float32),
+    )
+
+
+def load_segmentation_data(n_samples, size=64, seed=0, as_float32=True):
+    """Cached :func:`make_segmentation_data`: ``(images, labels)``."""
+    name = _artifact_name("segmentation", n_samples=n_samples, size=size, seed=seed)
+    return _load_or_build(
+        name,
+        lambda: make_segmentation_data(n_samples, size, seed),
+        pack=_pack_images_and_targets,
+        unpack=lambda arrays: _unpack_images_and_targets(arrays, as_float32),
+    )
+
+
+def load_cloud_data(n_samples, size=64, seed=0, as_float32=True):
+    """Cached :func:`make_cloud_data`: ``(images, masks)``."""
+    name = _artifact_name("cloud", n_samples=n_samples, size=size, seed=seed)
+    return _load_or_build(
+        name,
+        lambda: make_cloud_data(n_samples, size, seed),
+        pack=_pack_images_and_targets,
+        unpack=lambda arrays: _unpack_images_and_targets(arrays, as_float32),
+    )
+
+
+def load_forest_data(n_samples, size=64, seed=0):
+    """Cached :func:`make_forest_data`: ``(images, instances)``.
+
+    The builder already returns uint8 ``(N, H, W, 3)`` images, so there is no
+    ``as_float32`` option here.
+    """
+    name = _artifact_name("forest", n_samples=n_samples, size=size, seed=seed)
+    return _load_or_build(name, lambda: make_forest_data(n_samples, size, seed))
+
+
+def _pack_detection(result):
+    """Flatten ``(images, objects_per_image)`` into plain arrays (no pickle)."""
+    images, objects_per_image = result
+    flat = [obj for objects in objects_per_image for obj in objects]
+    return {
+        "images": _images_to_uint8(images),
+        "counts": np.array([len(objects) for objects in objects_per_image], np.int64),
+        "labels": np.array([obj.label for obj in flat], dtype=str),
+        "bboxes": np.array([obj.bbox for obj in flat], np.float64).reshape(-1, 4),
+    }
+
+
+def _unpack_detection(arrays, as_float32):
+    """Inverse of :func:`_pack_detection`."""
+    labels, bboxes = arrays["labels"], arrays["bboxes"]
+    objects_per_image, start = [], 0
+    for count in arrays["counts"]:
+        stop = start + int(count)
+        objects_per_image.append([
+            SceneObject(str(label), tuple(float(v) for v in bbox))
+            for label, bbox in zip(labels[start:stop], bboxes[start:stop], strict=True)
+        ])
+        start = stop
+    return _images_from_uint8(arrays["images"], as_float32), objects_per_image
+
+
+def load_detection_data(
+    n_samples, size=96, seed=0, max_objects=DETECTION_MAX_OBJECTS, as_float32=True
+):
+    """Cached :func:`make_detection_data`: ``(images, objects_per_image)``."""
+    name = _artifact_name(
+        "detection", n_samples=n_samples, size=size, seed=seed, max_objects=max_objects)
+    return _load_or_build(
+        name, lambda: make_detection_data(n_samples, size, seed, max_objects),
+        pack=_pack_detection,
+        unpack=lambda arrays: _unpack_detection(arrays, as_float32),
+    )

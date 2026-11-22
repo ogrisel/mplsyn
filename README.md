@@ -68,6 +68,16 @@ pixi run -e dev install-torch      # PyTorch (auto device: CUDA/MPS/XPU/CPU)
 pixi run -e dev install-sklearn    # scikit-learn (anchor k-means)
 ```
 
+The modeling notebooks load their data with `mplsyn.datasets.load_*`, which read a
+pregenerated `.npz` from the local cache (`~/.cache/mplsyn`, or `$MPLSYN_DATA_HOME`),
+else download it from `$MPLSYN_DATA_URL`, else generate it once and cache it.
+To build the artifacts for every notebook into `./staging/` (git-ignored):
+
+```bash
+pixi run -e dev stage-datasets
+MPLSYN_DATA_HOME=staging pixi run -e dev lab    # try them locally
+```
+
 Unlike the demo notebooks (each cell under 10 s), the training notebooks run for
 a few minutes; notebook 08 exposes a `FAST` flag for a quick smoke run.
 
