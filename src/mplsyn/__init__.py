@@ -7,6 +7,7 @@ from mplsyn.annotations import (
     train_val_test_split,
     yolo_lines,
 )
+from mplsyn.diagrams import plot_unet
 from mplsyn.materials import MATERIALS, generate_material, material_textures
 from mplsyn.metrics import (
     diversity_report,
@@ -71,6 +72,7 @@ __all__ = [
     "label_histogram",
     "material_textures",
     "objects_per_scene",
+    "plot_unet",
     "road_network",
     "scene_to_coco",
     "semantic_labels",

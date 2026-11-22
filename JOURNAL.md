@@ -3,6 +3,21 @@
 Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
+### 2026-11-23 00:45 — 06: encoder/decoder blocks and U-Net diagram
+
+- `SmallUNet` is now built from `EncoderBlock` and `DecoderBlock` (template and
+  solution updated). A `DecoderBlock` takes the map to upsample and the skip
+  connection, and does the nearest-neighbour upsampling and the concatenation itself,
+  so `forward` only wires blocks (`self.decoder3(enc4, enc3)`). An inline note explains
+  that a transposed convolution (`nn.ConvTranspose2d`) could learn the upscaling.
+- New `mplsyn.diagrams.plot_unet` (matplotlib, U-Net paper style: channels above and
+  height x width below each box, skip connections, legend) with tests in
+  `tests/test_diagrams.py`; displayed in 06 before the exercise instructions.
+- Checked that the refactored class has the same weights (same seed) and outputs as
+  the previous one. Re-executing the notebook (and the previously committed version of
+  it) now gives val mIoU 0.542 / test 0.558 instead of 0.494 / 0.501 (run-to-run drift
+  of the environment, not of the code); README table updated.
+
 ### 2026-11-22 23:55 — Notebook formatting and 06 exercises
 
 - Formatted all code cells of the notebooks with `ruff format` (black-compatible,
