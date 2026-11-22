@@ -1,122 +1,47 @@
-# Learning objectives
+# Learning objectives — modeling notebooks
 
-What each notebook teaches, in the order they are meant to be read. The first
-four build the synthetic-data generator bottom-up (materials -> objects ->
-scenes -> sampling/degradation); the last four train and evaluate models on
-that data. They live in `notebooks/dataset_qa/` (01-04) and
-`notebooks/modeling/` (05-08).
+What the four modeling notebooks in `notebooks/modeling/` teach, in the order
+they are meant to be read. They all train and evaluate PyTorch models on the
+synthetic data built by the generator notebooks; the dataset-building notebooks
+live in `notebooks/dataset_qa/` and are out of scope here.
+
+Every notebook runs on CUDA / MPS / XPU when available and falls back to CPU
+(`pick_device()`), uses three disjoint train/validation/test splits, and reports
+the test metric once.
 
 ## Learning path at a glance
 
-| # | Notebook | Level | Builds on | Main outcome |
+| # | Notebook | Task | Builds on | Main outcome |
 |---|---|---|---|---|
-| 01 | `01_texture_generation` | materials | — | render and reuse surface textures |
-| 02 | `02_object_generation` | objects | 01 | draw annotated objects from materials |
-| 03 | `03_scene_generation` | scenes | 01, 02 | compose and annotate full scenes |
-| 04 | `04_scene_diversity` | sampling | 03 | add realistic sensor/atmosphere variation |
-| 05 | `05_train_scene_classification` | image classification | 03, 04 | train a CNN, read a confusion matrix |
-| 06 | `06_train_semantic_segmentation` | per-pixel classification | 03, 04 | train a U-Net, read IoU / mIoU |
-| 07 | `07_train_cloud_occlusion` | binary segmentation | 04, 06 | segment clouds, read IoU / Dice |
-| 08 | `08_train_object_detection` | detection + instances | 02, 03, 04 | train a detector and a mask head, read mAP / IoU / count error |
-
----
-
-## 01 — Material textures (low level)
-
-**Role.** The foundation: a *material* is a dense, abstract surface texture
-(grass, foliage, asphalt, soil, sand, water, crop, rock, ...) with no object
-semantics, reused by everything above it.
-
-**By the end you can:**
-- generate a material deterministically from a seed and explain why the same
-  material varies but stays plausible across seeds;
-- reuse a material as a clipped fill on arbitrary geometry with `fill_patch`
-  (a roof, a canopy, a pond, a triangle);
-- reason about the renderer's hard limits (the `MAX_SHAPES` shape budget) and
-  about determinism (same seed -> same image).
-
-**Key concepts:** material abstraction, texture grain, clipped fills, seeded
-determinism, shape budget.
-
----
-
-## 02 — Objects from materials
-
-**Role.** Objects are geometry filled with a material, with a shadow and a
-rotation. They are the annotated primitives that scenes are built from.
-
-**By the end you can:**
-- use the object contract
-  `draw_x(ax, rng, budget, cx, cy, size, materials=None, rotation=None)` and the
-  normalised `(x0, y0, x1, y1)` bounding box it returns;
-- build an object from geometry + material fill (plus wheel/cabin/shadow
-  details) and keep it readable at satellite scale;
-- explain the **"no axis-aligned prior"** principle: objects are drawn at
-  arbitrary orientation so a model cannot cheat on upright alignment;
-- recover tight axis-aligned boxes for object-level annotations.
-
-**Key concepts:** geometry + material fill, rotation-invariant drawing,
-bounding-box contract, top-down (plan) view.
-
----
-
-## 03 — Scenes: material ground + objects
-
-**Role.** A scene composes a material ground with placed, annotated objects and
-returns a `Scene` (image + objects).
-
-**By the end you can:**
-- compose a scene from a ground material plus semantic objects, with placement
-  and orientation that respect the layout rules (roads, field mosaics, water);
-- read `Scene.objects` and `SceneObject.pixel_bbox` (top-left origin) and export
-  annotations to **COCO / YOLO** with a deterministic train/val/test split
-  (`mlpsyn.annotations`);
-- distinguish annotated point objects from unannotated background features
-  (roads, rivers, parks);
-- recognise the **fourteen scene types**, including the deliberately ambiguous
-  transitional ones (`savanna`, `scrubland`, `woodland_pasture`, `coastal_city`,
-  `forest_fields`, `urban_fringe`).
-
-**Key concepts:** scene composition, annotation origins (scene vs pixel),
-COCO/YOLO formats, dataset splits, ambiguous/transitional scenes.
-
----
-
-## 04 — Scene diversity and sensor realism
-
-**Role.** Sample the scene vocabulary and apply a physically ordered degradation
-chain, then measure the diversity.
-
-**By the end you can:**
-- apply the **atmosphere -> optics -> detector** chain with `apply_sensor`
-  (haze and cloud occlusion, then blur, then bounded Gaussian/Poisson noise) and
-  explain why the order matters;
-- describe how clouds (mostly opaque cores, ~25 % semi-transparent), haze, blur
-  and noise differ and when each degrades a task most;
-- quantify variety with `mlpsyn.metrics` (label histogram, objects per scene,
-  spatial coverage, entropy) instead of eyeballing alone;
-- verify that the RGB image, the semantic mask and the cloud mask are
-  **pixel-aligned** because they come from the same deterministic spec.
-
-**Key concepts:** degradation order, atmosphere vs optics vs detector,
-cloud occlusion and transparency, pixel alignment, diversity metrics.
+| 05 | `05_train_scene_classification` | image classification | scene data | train a CNN; read a confusion matrix honestly |
+| 06 | `06_train_semantic_segmentation` | per-pixel classification | scene + mask data | train a U-Net; read IoU / mIoU and per-class errors |
+| 07 | `07_train_cloud_occlusion` | binary segmentation | cloud masks | read IoU / Dice, operating points and calibration |
+| 08 | `08_train_object_detection` | detection + instances | object annotations | train a detector + mask head; read mAP, PR, error causes |
 
 ---
 
 ## 05 — Scene classification (image-level labels)
 
-**Role.** The simplest model task: one label per image.
+**Role.** The simplest model task: one label per image, on a deliberately
+ambiguous dataset.
+
+**Prerequisites.** Scenes and their image-level labels (generator notebooks 01-03).
 
 **By the end you can:**
-- turn rendered scenes into a **class-balanced, image-level** dataset, including
-  deliberate two-scene **mixtures** and a confusable-rival rule;
+- turn rendered scenes into a class-balanced image-level dataset, including
+  two-scene **mixtures** whose rival is drawn from a confusable set;
 - build a small CNN with **global average pooling** and train it with
-  **cross-entropy**;
-- read a **confusion matrix** together with a **class-count histogram** and
-  explain that many off-diagonal entries are **irreducible label ambiguity**
-  (a 50/50 mixture has no single correct label), not modelling failure;
-- quantify run-to-run noise with a **seed-variance** experiment and refuse to
-  over-interpret differences smaller than the spread.
+  **cross-entropy**, watching the **training and validation loss** curves;
+- read a **confusion matrix together with a class-count histogram**, and explain
+  that the off-diagonal entries are largely **irreducible label ambiguity**
+  (a 50/50 mixture has no single correct label), not a modelling failure;
+- quote an accuracy against a **majority-class baseline**, and quantify run-to-run
+  noise with a **seed-variance** experiment (differences smaller than the spread
+  are noise).
+
+**Key concepts:** image-level labels, logits/softmax, cross-entropy, global
+average pooling, confusion matrix, class histogram, label ambiguity, seed
+variance.
 
 **Exercises.** Relabel the boundary scenes and watch the confusion move; add a
 flip augmentation and explain the (small) gain.
@@ -128,23 +53,30 @@ whether an accuracy number actually means something.
 
 ## 06 — Semantic segmentation (per-pixel labels)
 
-**Role.** Move from one label per image to one label per pixel.
+**Role.** From one label per image to one label per pixel.
+
+**Prerequisites.** Scenes plus pixel-aligned semantic masks (`mlpsyn.segmentation`).
 
 **By the end you can:**
-- build paired **(image, semantic-mask)** data with `mlpsyn.segmentation`;
+- build paired **(image, semantic-mask)** data, with masks that are pixel-aligned
+  to the image by construction;
 - implement a compact **U-Net** with skip connections;
 - train with **cross-entropy**, correctly using `ignore_index` for the unlabeled
   class 0;
 - read **per-class IoU** and **mean IoU (mIoU)**, and use a pixel-level
-  **confusion matrix** + class histogram to see *which* classes confuse;
-- explain why a **class-weighted loss** lifts rare classes and raises mIoU, and
+  **confusion matrix** plus a class histogram to see *which* classes confuse
+  (e.g. `rock` -> `gravel`, `road` <-> `built`);
+- show why a **class-weighted loss** lifts the rare classes and raises mIoU, and
   why pixel accuracy alone hides rare-class failure.
 
-**Exercises.** Explain `ignore_index=0`; find the lowest-IoU classes and relate
-them to class frequency.
+**Key concepts:** semantic segmentation, softmax over classes per pixel,
+`ignore_index`, IoU / mIoU, pixel confusion matrix, class imbalance.
 
-**After this notebook:** you can train and honestly evaluate a segmentation model
-and diagnose its per-class behaviour.
+**Exercises.** Explain `ignore_index=0`; find the lowest-IoU classes and relate
+them to class frequency and to the weighted-loss comparison.
+
+**After this notebook:** you can train and honestly evaluate a segmentation
+model and diagnose its per-class behaviour.
 
 ---
 
@@ -152,15 +84,24 @@ and diagnose its per-class behaviour.
 
 **Role.** A focused binary-segmentation task on the atmosphere itself.
 
+**Prerequisites.** Cloud fields and occlusion masks (`mlpsyn.sensor.clouds`),
+plus the segmentation ideas from 06.
+
 **By the end you can:**
-- simulate cloud occlusion as a soft field with `mlpsyn.sensor.clouds`;
+- simulate cloud occlusion as a soft field, including a mix of opaque cores and
+  semi-transparent veils;
 - train a U-Net for **binary segmentation** of the occlusion mask;
 - read **IoU, Dice and pixel accuracy**, and explain why accuracy misleads when
   clouds are the minority class;
 - treat the 0.5 threshold as a **convention**: a threshold sweep shows the
-  precision/recall operating point;
+  precision/recall operating point, and explain why Dice is usually preferred to
+  accuracy for this target;
 - check **calibration** with a reliability diagram and fix over/under-confidence
-  with **temperature scaling** (ECE before/after).
+  with **temperature scaling** (ECE before/after), noting that calibration does
+  not change accuracy.
+
+**Key concepts:** binary segmentation, BCE-with-logits, sigmoid, IoU vs Dice vs
+accuracy, operating point, calibration / ECE, temperature scaling.
 
 **Exercises.** Why Dice over accuracy here; widen the coverage range and describe
 the effect on IoU / Dice.
@@ -175,22 +116,32 @@ probability calibration for a binary mask.
 **Role.** The capstone: localise *and* classify objects, then separate
 overlapping instances.
 
+**Prerequisites.** Object boxes and instance masks (generator notebooks 02-03),
+plus the segmentation ideas from 06.
+
 **By the end you can:**
 - encode objects as **anchor-based detection targets** (objectness, one-hot
-  class, box), choosing anchors by **k-means in log space** over box shapes;
+  class, box), choosing anchors by **k-means in log space** over box shapes and
+  reading the assignment visually;
 - explain **why BCE-with-logits is used on the multi-class head** (binary CE
   applied independently per class; softmax CE is the mutually-exclusive
-  alternative);
+  alternative) and why the head supports multi-label targets;
 - train a multi-task detector (objectness + class + box) and evaluate it with
   **mAP@0.5** (score threshold, per-class NMS, greedy matching), including
-  per-class **precision-recall curves**, mAP at several IoU thresholds, and a
+  per-class **precision-recall curves**, mAP at stricter IoU thresholds, and a
   **score-threshold sweep**;
 - explain the detector's **error taxonomy** (localisation vs background vs
   duplicate vs class confusion) and read the **resolution ablation** (96 px vs
   64 px);
 - extend the detector with a **per-anchor mask head** (box-relative,
   crop-and-resize target) and evaluate instance masks with **IoU** and
-  **count MAE / MAPE**, stratified by canopy density.
+  **count MAE / MAPE**, stratified by canopy density;
+- separate unavoidable limits (a ~4 px car, a fully occluded crown) from things a
+  model change could fix.
+
+**Key concepts:** anchors, objectness, box encoding/decoding, NMS, AP / mAP,
+precision-recall, localization quality, box-relative masks, count error,
+resolution ceiling, error taxonomy.
 
 **Exercises.** Vary the NMS threshold; lower the score threshold and watch count
 vs IoU; raise `MASK_SIZE` and weigh the accuracy gain against cost.
@@ -201,40 +152,34 @@ single number.
 
 ---
 
-## Educational-value review
+## Educational-value review (modeling notebooks)
 
 ### Strengths
 
-- **Clear, bottom-up progression** (materials -> objects -> scenes -> sampling ->
-  classification -> segmentation -> clouds -> detection), so every layer builds
-  on the previous one.
-- **The model notebooks state objectives, exercises and self-check notes**, and
-  place a **read-out below every figure**.
-- **Honest evaluation**: three disjoint splits and a reported-once test set;
-  trivial baselines (majority class, all-background, all-clear, no-object,
-  mean-count); training/validation curves with validation loss; confusion
-  matrices with class histograms; PR curves; calibration; error taxonomy.
-- **Deliberate difficulty is explained**: ambiguous scene mixtures with an
-  irreducible label ceiling, semi-transparent/opaque clouds, the resolution
-  ceiling and the few-pixel car.
-- **Reproducibility**: seeded rendering and training, deterministic splits, and
-  automatic device selection (CUDA / MPS / XPU / CPU).
+- **Four tasks of increasing structure** (classification -> segmentation ->
+  binary mask -> detection + instances), each with a clear objective, exercises
+  and self-check notes.
+- **A read-out sits directly below every figure**, and each figure is designed to
+  teach a specific idea (curves, confusion matrix + class histogram, PR curves,
+  calibration, error taxonomy, resolution ablation).
+- **Honest evaluation throughout**: three splits with a report-once test set;
+  trivial baselines (majority class, most-frequent class, all-clear, no-object,
+  mean-count); training/validation loss curves; per-class breakdowns; and explicit
+  discussion of the irreducible ceiling (label ambiguity, clouds, resolution).
+- **Reproducibility**: seeded training, deterministic splits and automatic device
+  selection; a `FAST` flag gives a quick smoke run for notebook 08.
+- **Metacognition**: the seed-variance figure and the "what to expect" notes teach
+  learners to treat single numbers with the right skepticism.
 
 ### Gaps and recommendations
 
-1. **01-04 have no explicit objectives or exercises.** This file supplies derived
-   objectives; consider adding a short "Learning objectives / Try this" cell to
-   each generator notebook (e.g. "change the sand ripple wavelength and predict
-   the effect on realism").
-2. **Fix small stale strings** (done for 01/03 in this round: the intro now says
-   fourteen scene types, a duplicated "Ten scene types" read-out was removed, and
-   "three seeds" became "five"). Keep watching for drift.
-3. **Add a cross-notebook learning path** to the README, pointing here.
-4. **08 is long (~50 cells, ~4-5 min).** A one-paragraph "contents / how to skim"
-   box near the top, or splitting detection and instance notebooks, would help.
-5. **More "why" depth in 07**: relate Dice to IoU explicitly and note that
-   temperature scaling does not change the argmax / accuracy.
-6. **Generator notebooks lack failure galleries**: a "when does this look wrong?"
-   grid (e.g. overlapping conifers, clipped shadows) would teach inspection.
-7. **Prerequisites / time budget** per notebook would let a reader plan a course
-   (roughly: 01-04 a few minutes each, 05-07 ~1-2 min, 08 ~5 min).
+1. **Add a short "contents / how to skim" box to 08** (~50 cells, 4-5 min).
+2. **Deepen the "why" notes in 07** (Dice vs IoU; temperature scaling leaves the
+   argmax unchanged).
+3. **Add prerequisites and a rough time budget** to each modeling notebook.
+4. **A cross-notebook learning path** in the README (this file provides the
+   content) so a reader knows 05 -> 06 -> 07 -> 08 builds up.
+5. **Consider a small "common pitfalls" box per notebook** (e.g. evaluating on
+   the test set, comparing across seeds, reading mAP without PR curves).
+6. **For 08, a dedicated vehicle/bus class** (or a truck/bus breakdown) would let
+   learners measure the new vehicles rather than folding them into `car`.

@@ -52,8 +52,8 @@ synthetic dataset (one notebook per level):
 - [`07_train_cloud_occlusion.ipynb`](notebooks/modeling/07_train_cloud_occlusion.ipynb) — cloud occlusion masks
 - [`08_train_object_detection.ipynb`](notebooks/modeling/08_train_object_detection.ipynb) — anchor detection + tree instance segmentation
 
-What each notebook teaches (objectives, exercises and prerequisites) is
-collected in [`LEARNING_OBJECTIVES.md`](LEARNING_OBJECTIVES.md).
+What the **modeling** notebooks teach (objectives, exercises and prerequisites)
+is collected in [`LEARNING_OBJECTIVES.md`](LEARNING_OBJECTIVES.md).
 
 The modeling notebooks need PyTorch and scikit-learn, which are installed with
 pip (no cp314 conda wheels) into the dev environment:

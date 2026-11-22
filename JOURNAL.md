@@ -3,6 +3,14 @@
 Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
+### 2026-09-24 20:45 — Focus learning objectives on the modeling notebooks
+
+- Rewrote `LEARNING_OBJECTIVES.md` around the four modeling notebooks (05-08)
+  only, with prerequisites, objectives, key concepts, exercises,
+  "after this notebook" outcomes, and an educational-value review. The dataset
+  QA notebooks (01-04) are now out of scope there.
+- README now points to the file as the *modeling* objectives.
+
 ### 2026-09-24 20:30 — Split notebooks into dataset_qa/ and modeling/
 
 - Moved the four generator/QA notebooks (01-04) to `notebooks/dataset_qa/`
