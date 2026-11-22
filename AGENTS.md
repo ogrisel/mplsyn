@@ -15,8 +15,8 @@ to be able to progressively increase realism of the generated images.
 At each iteration:
 
 - Execute all the notebooks to make sure that outputs are up to date;
-- Extract the images, and below each image, describe, in the notebook, what you
-  see in the image;
+- Extract the images, and below each image, ensure that there is a notebook cell
+  with an up to date description of what you see in the image;
 - Inspect the image to identify things that are good, and list defects that should be
   fixed and assign a severity level to each. Write that after the image descriptions in
   the notebook;
@@ -36,6 +36,10 @@ previous iteration(s). The write the following for each image:
 - assessment of the level of diversity across seeds.
 
 ## Avoiding download-size interruptions
+
+Note: this section only applies to DeepSeek based agents, in particular when served
+by OpenRouter from the OpenCode harness. Other agent/harness combination might not need
+this.
 
 The 30 MB limit is a **cumulative budget for the whole session**, not a per-file
 cap. Every image handed to the Read tool counts, so a few large reads in a row
@@ -65,20 +69,3 @@ can exhaust it and abort the session. To stay well under it:
 - Keep individual embedded notebook images under 5 MB, and prefer keeping each
   notebook's total embedded image payload small so that any accidental read is
   cheap.
-
-Once all major defects are fixed. Step back and think about the how to improve
-realism a bit: consistency of view angle, shadows, consistency of the scale of
-objects across scenes, consistency of the topology of relationships between
-nearby objects, varying density of objects, varying spatial distribution of
-objects, lack of diversity accross seeds...
-
-Make sure that the sampled scenes showcase combinations of all the available
-vocabulary of objects and textures in realistic enough ways. If some objects or
-textures cannot naturally show up in satellite images, consider trimming them
-from the library instead.
-
-Also think about progressively enriching the vocabulary of textures, objects
-and types of scenes to build more realistic and diverse scenes.
-
-Also consider including cloud cover and other forms of athmospheric / sensor noise.
-
