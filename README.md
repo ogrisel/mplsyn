@@ -7,6 +7,11 @@ matching annotations at the image, object and pixel level. It is designed to
 mimic satellite/aerial and medical imagery without needing large asset
 collections.
 
+## Google Colab
+
+- https://colab.research.google.com/github/ogrisel/mplsyn
+
+
 See [ROADMAP.md](ROADMAP.md) for the current plan.
 
 ## Development
