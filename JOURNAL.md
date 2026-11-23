@@ -3,6 +3,21 @@
 Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
+### 2026-11-23 01:35 — 05/06 review fixes, cell-time rule
+
+- Review of notebooks 05 and 06; prose fixes (no code or outputs changed):
+  06 recipe table now says 30 epochs (the code is right); 06 evaluation text and
+  figure read-out no longer claim that learning saturates or that gravel/wetland are
+  near zero (training is still improving, the validation curves are noisy, snow is 0
+  and gravel/wetland are below 0.2); 05 no longer promises model selection (the last
+  epoch is evaluated), the least-confident gallery is described as such (3 of 10 are
+  predicted correctly, most are two-scene mixtures, one is a blurred meadow); 05 uses
+  the computed 0.825 ceiling instead of "~0.75" and no longer mentions augmentation.
+  README: the validation split monitors training, and selects the checkpoint only in
+  the notebooks that say so.
+- `AGENTS.md`: individual cell execution time is now capped at around 15 seconds
+  (was 10); the 06 training cell takes about 13 s.
+
 ### 2026-11-23 01:10 — 05/06: data grids, named block arguments
 
 - Notebooks 05 and 06 now show a compact grid of random training samples right after

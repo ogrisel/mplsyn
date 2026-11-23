@@ -87,7 +87,8 @@ a few minutes; notebook 08 exposes a `FAST` flag for a quick smoke run.
 ## Results at a glance
 
 Held-out scores after the scene-generation / sensor changes. The **validation**
-split selects the checkpoint; the **test** split is reported once (they are
+split is used to monitor training (and, in the notebooks that say so, to keep the best
+checkpoint); the **test** split is reported once (they are
 close, so the models are not tuned to validation).
 
 | notebook | task (64 px unless noted) | metric | validation | test |

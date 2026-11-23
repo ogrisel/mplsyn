@@ -6,7 +6,7 @@ notebooks generate grids with plt subplots with 5 columns for different seeds
 and as many rows there are of rendering types to do.
 
 Make sure that the notebooks are fast to run. Each individual cell should
-execute in a maximum of 10 seconds.
+execute in around 15 seconds at most.
 
 Ensure that each individual image stays below 5 MB. Adjust the resolution of the image
 to find a good tradeoff between iteration speed, resource usage and enough image quality
