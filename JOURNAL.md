@@ -3,6 +3,24 @@
 Iteration log. Newest at the top. Each entry: item addressed, what changed,
 what the re-render showed, and follow-ups.
 
+### 2026-11-23 01:10 — 05/06: data grids, named block arguments
+
+- Notebooks 05 and 06 now show a compact grid of random training samples right after
+  the data is loaded: class labels as titles in 05; RGB images alternating with their
+  colour-coded label masks and a class legend in 06. The sample is drawn with a local
+  `np.random.default_rng(0)` so it does not change the training results. Figures
+  rendered at about 1.3x (127 KB and 180 KB PNGs); each has a figure read-out cell.
+- 06: `EncoderBlock`/`DecoderBlock` are built with named arguments, `EncoderBlock`
+  defaults to `stride=2` (`encoder1` passes `stride=1`); the palette is defined once.
+- The environment now has torch 2.15.0 (committed outputs came from 2.14.1), which
+  explains the 06 drift (val mIoU 0.494 -> 0.542) noticed earlier. Re-executing 05 gives
+  val accuracy 0.759 (was 0.777), test 0.786; seeds 0.759 / 0.714 / 0.652. README row
+  for 05 updated (0.76 / 0.79).
+- All plots of notebooks 05 and 06 use matplotlib's default font size and DPI (explicit
+  `fontsize=` and `dpi=` arguments removed, `figsize` kept). Both notebooks re-executed;
+  the new grids remain legible. Figure PNGs are now rendered at the default 100 DPI and
+  total about 0.85 MB (06) and 0.75 MB (05) of image payload.
+
 ### 2026-11-23 00:45 — 06: encoder/decoder blocks and U-Net diagram
 
 - `SmallUNet` is now built from `EncoderBlock` and `DecoderBlock` (template and
